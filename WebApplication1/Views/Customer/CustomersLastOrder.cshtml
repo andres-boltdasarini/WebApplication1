@@ -1,0 +1,30 @@
+﻿@model List<CustomerLastOrderDTO>
+@{
+    ViewData["Title"] = "Клиенты с последним заказом";
+}
+
+<h1>Клиенты с последним заказом</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Клиент</th>
+            <th>Email</th>
+            <th>Дата последнего заказа</th>
+            <th>Сумма последнего заказа</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@customer.Name</td>
+                <td>@customer.Email</td>
+                <td>@(customer.LastOrderDate?.ToString("dd.MM.yyyy") ?? "Нет заказов")</td>
+                <td>@(customer.LastOrderAmount > 0 ? customer.LastOrderAmount.ToString("C") : "-")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Назад</a>

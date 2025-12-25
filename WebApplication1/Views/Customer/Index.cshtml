@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Главная";
+}
+
+<div class="container">
+    <h1 class="mt-4">Запросы к базе данных</h1>
+
+    <div class="list-group mt-4">
+        <a asp-action="CustomersWithOrders" class="list-group-item list-group-item-action">
+            <h5>1. Клиенты с заказами</h5>
+            <p class="mb-1">Показать всех клиентов, у которых есть хотя бы один заказ</p>
+        </a>
+
+        <a asp-action="RecentOrders" class="list-group-item list-group-item-action">
+            <h5>2. Последние заказы</h5>
+            <p class="mb-1">Заказы за последние 30 дней (сначала новые)</p>
+        </a>
+
+        <a asp-action="CustomerTotal" asp-route-id="1" class="list-group-item list-group-item-action">
+            <h5>3. Сумма заказов клиента</h5>
+            <p class="mb-1">Общая сумма всех заказов для клиента с ID=1</p>
+        </a>
+
+        <a asp-action="CustomersLastOrder" class="list-group-item list-group-item-action">
+            <h5>4. Клиенты с последним заказом</h5>
+            <p class="mb-1">Дата и сумма последнего заказа каждого клиента</p>
+        </a>
+
+        <a asp-action="WealthyCustomers" class="list-group-item list-group-item-action">
+            <h5>5. Богатые клиенты</h5>
+            <p class="mb-1">Клиенты со средней суммой заказа больше 1000</p>
+        </a>
+    </div>
+</div>

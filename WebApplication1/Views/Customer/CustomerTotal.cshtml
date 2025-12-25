@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Сумма заказов клиента";
+    var customer = ViewBag.Customer as Customer;
+}
+
+<h1>Общая сумма заказов клиента</h1>
+
+@if (customer != null)
+{
+    <div class="alert alert-info">
+        <h4>@customer.Name (@customer.Email)</h4>
+        <p class="mb-0">Общая сумма всех заказов: <strong>@ViewBag.TotalAmount.ToString("C")</strong></p>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        Клиент не найден
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Назад</a>

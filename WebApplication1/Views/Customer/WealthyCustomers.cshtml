@@ -1,0 +1,32 @@
+﻿@model List<WealthyCustomerDTO>
+@{
+    ViewData["Title"] = "Богатые клиенты";
+}
+
+<h1>Клиенты со средней суммой заказа > 1000</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Клиент</th>
+            <th>Email</th>
+            <th>Средняя сумма заказа</th>
+            <th>Количество заказов</th>
+            <th>Всего потрачено</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@customer.Name</td>
+                <td>@customer.Email</td>
+                <td>@customer.AverageOrderAmount.ToString("C")</td>
+                <td>@customer.OrderCount</td>
+                <td>@customer.TotalSpent.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Назад</a>
