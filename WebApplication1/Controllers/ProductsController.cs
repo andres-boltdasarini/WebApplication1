@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
             "Спорт"
         };
 
-        // GET: Products/Index
+        // GET: Products/Indexs
         public IActionResult Index()
         {
             ViewData["Title"] = "Список продуктов";
