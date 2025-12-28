@@ -14,14 +14,16 @@ namespace WebApplication1.Data
 
         public OrderRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("Default");
+            _connectionString = configuration.GetConnectionString("DefaultConnection")
+                             ?? configuration.GetConnectionString("Default");
         }
 
         public async Task<IEnumerable<Order>> GetByUserIdAsync(int userId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
+            // ИЗМЕНЕНО: user_id вместо userid
             return await connection.QueryAsync<Order>(
-                "SELECT * FROM orders WHERE userid = @UserId",
+                "SELECT * FROM orders WHERE user_id = @UserId",
                 new { UserId = userId });
         }
     }

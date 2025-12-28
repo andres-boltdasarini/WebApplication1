@@ -28,11 +28,6 @@ namespace WebApplication1.Controllers
             if (id <= 0)
                 return BadRequest("Invalid user id");
 
-            // Проверка существования пользователя
-            var userExists = await _userRepository.ExistsAsync(id);
-            if (!userExists)
-                return NotFound();
-
             try
             {
                 // Параллельная загрузка данных
@@ -46,14 +41,30 @@ namespace WebApplication1.Controllers
                 var orders = await ordersTask;
                 var messages = await messagesTask;
 
-                // Бизнес-логика
-                if (orders?.Any(o => o.Total > 1000) == true)
-                    user.IsVIP = true;
+                // Проверяем, что пользователь существует
+                if (user == null)
+                    return NotFound($"Пользователь с ID {id} не найден");
+
+                // Создаем КОПИЮ пользователя для применения бизнес-логики
+                var userForViewModel = new User
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    IsVIP = user.IsVIP // Берем текущее значение
+                };
+
+                // Применяем бизнес-логику VIP статуса
+                // Проверяем не null и не пустую коллекцию
+                if (orders != null && orders.Any())
+                {
+                    // Если есть хотя бы один заказ > 1000, устанавливаем VIP
+                    userForViewModel.IsVIP = orders.Any(o => o.Total > 1000);
+                }
 
                 var viewModel = new ProfileViewModel
                 {
-                    User = user,
-                    Orders = orders,
+                    User = userForViewModel,
+                    Orders = orders ?? Enumerable.Empty<Order>(),
                     UnreadMessages = messages?.Count(m => !m.IsRead) ?? 0
                 };
 
@@ -61,8 +72,11 @@ namespace WebApplication1.Controllers
             }
             catch (Exception ex)
             {
-                // Логирование ошибки
-                // Можно использовать ILogger для логирования ex
+                // Для отладки показываем детали ошибки
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    return Content($"Ошибка: {ex.Message}<br>StackTrace: {ex.StackTrace}");
+                }
                 return StatusCode(500, "An error occurred while processing your request");
             }
         }

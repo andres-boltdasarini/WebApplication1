@@ -14,7 +14,7 @@ namespace WebApplication1.Data
 
         public UserRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("Default");
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         public async Task<User> GetByIdAsync(int id)
