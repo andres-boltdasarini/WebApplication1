@@ -1,0 +1,169 @@
+﻿@model WebApplication1.Models.ProfileViewModel
+@{
+    ViewData["Title"] = $"Профиль пользователя - {Model.User.Name}";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Профиль пользователя</h1>
+        </div>
+    </div>
+
+    <!-- Карточка пользователя -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Основная информация</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>ID:</strong> @Model.User.Id</p>
+                            <p><strong>Имя:</strong> @Model.User.Name</p>
+                            <p>
+                                <strong>Статус VIP:</strong>
+                                @if (Model.User.IsVIP)
+                                {
+                                    <span class="badge bg-success">ДА</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">НЕТ</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Всего заказов:</strong> @Model.Orders.Count()</p>
+                            <p>
+                                <strong>Непрочитанных сообщений:</strong>
+                                <span class="badge bg-info">@Model.UnreadMessages</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция заказов -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Заказы пользователя</h3>
+                </div>
+                <div class="card-body">
+                    @if (Model.Orders.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID заказа</th>
+                                    <th>Сумма</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.Orders)
+                                {
+                                    <tr>
+                                        <td>@order.Id</td>
+                                        <td>@order.Total.ToString("C")</td>
+                                        <td>
+                                            @if (order.Total > 1000)
+                                            {
+                                                <span class="badge bg-warning">КРУПНЫЙ ЗАКАЗ</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success">Стандартный</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2"><strong>Общая сумма:</strong></td>
+                                    <td><strong>@Model.Orders.Sum(o => o.Total).ToString("C")</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">У пользователя нет заказов</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция для проверки VIP статуса -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Логика VIP статуса</h3>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Пользователь получает статус VIP, если у него есть хотя бы один заказ
+                        на сумму больше <strong>1,000.00 ₽</strong>
+                    </p>
+                    @{
+                        var hasLargeOrder = Model.Orders.Any(o => o.Total > 1000);
+                    }
+                    <p>
+                        <strong>Условие выполнено:</strong>
+                        @if (hasLargeOrder)
+                        {
+                            <span class="badge bg-success">ДА</span>
+                            <span> (Найдены заказы > 1,000.00 ₽)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">НЕТ</span>
+                            <span> (Нет заказов > 1,000.00 ₽)</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Тестовые пользователи:</h5>
+                    <div class="btn-group" role="group">
+                        <a href="/User/Profile/1" class="btn btn-primary">Пользователь 1</a>
+                        <a href="/User/Profile/2" class="btn btn-secondary">Пользователь 2</a>
+                        <a href="/User/Profile/3" class="btn btn-success">Пользователь 3</a>
+                        <a href="/User/Profile/4" class="btn btn-info">Пользователь 4</a>
+                    </div>
+                    <hr>
+                    <a href="/" class="btn btn-outline-secondary">На главную</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .badge {
+        font-size: 0.9em;
+        padding: 5px 10px;
+    }
+    .table {
+        margin-top: 10px;
+    }
+</style>
