@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавляем сервисы в контейнер
 builder.Services.AddControllersWithViews();
 
-// Регистрация репозиториев
+// Регистрация сервисов
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();

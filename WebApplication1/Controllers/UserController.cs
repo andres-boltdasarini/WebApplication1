@@ -9,18 +9,11 @@ namespace WebApplication1.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IMessageRepository _messageRepository;
+        private readonly IUserProfileService _userProfileService;
 
-        public UserController(
-            IUserRepository userRepository,
-            IOrderRepository orderRepository,
-            IMessageRepository messageRepository)
+        public UserController(IUserProfileService userProfileService)
         {
-            _userRepository = userRepository;
-            _orderRepository = orderRepository;
-            _messageRepository = messageRepository;
+            _userProfileService = userProfileService;
         }
 
         public async Task<IActionResult> Profile(int id)
@@ -30,44 +23,11 @@ namespace WebApplication1.Controllers
 
             try
             {
-                // Параллельная загрузка данных
-                var userTask = _userRepository.GetByIdAsync(id);
-                var ordersTask = _orderRepository.GetByUserIdAsync(id);
-                var messagesTask = _messageRepository.GetByToUserIdAsync(id);
 
-                await Task.WhenAll(userTask, ordersTask, messagesTask);
+                  var viewModel = await _userProfileService.GetUserProfileAsync(id);
 
-                var user = await userTask;
-                var orders = await ordersTask;
-                var messages = await messagesTask;
-
-                // Проверяем, что пользователь существует
-                if (user == null)
+                if (viewModel == null)
                     return NotFound($"Пользователь с ID {id} не найден");
-
-                // Создаем КОПИЮ пользователя для применения бизнес-логики
-                var userForViewModel = new User
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    IsVIP = user.IsVIP // Берем текущее значение
-                };
-
-                // Применяем бизнес-логику VIP статуса
-                // Проверяем не null и не пустую коллекцию
-                if (orders != null && orders.Any())
-                {
-                    // Если есть хотя бы один заказ > 1000, устанавливаем VIP
-                    userForViewModel.IsVIP = orders.Any(o => o.Total > 1000);
-                }
-
-                var viewModel = new ProfileViewModel
-                {
-                    User = userForViewModel,
-                    Orders = orders ?? Enumerable.Empty<Order>(),
-                    UnreadMessages = messages?.Count(m => !m.IsRead) ?? 0
-                };
-
                 return View(viewModel);
             }
             catch (Exception ex)
