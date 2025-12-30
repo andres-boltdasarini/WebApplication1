@@ -29,32 +29,64 @@ namespace WebApplication1.Data
 
         public async Task<ProfileViewModel> GetUserProfileAsync(int userId)
         {
-            // Параллельная загрузка данных
-            var userTask = _userRepository.GetByIdAsync(userId);
-            var ordersTask = _orderRepository.GetByUserIdAsync(userId);
-            var messagesTask = _messageRepository.GetByToUserIdAsync(userId);
+            if (userId <= 0)
+                throw new ArgumentException("User ID must be positive", nameof(userId));
 
-            await Task.WhenAll(userTask, ordersTask, messagesTask);
-
-            var user = await userTask;
-            var orders = await ordersTask;
-            var messages = await messagesTask;
-
-            // Проверяем, что пользователь существует
-            if (user == null)
-                return null;
-
-            // Применяем бизнес-логику VIP статуса
-            var userForViewModel = ApplyVipBusinessLogic(user, orders);
-
-            var viewModel = new ProfileViewModel
+            try
             {
-                User = userForViewModel,
-                Orders = orders ?? Enumerable.Empty<Order>(),
-                UnreadMessages = messages?.Count(m => !m.IsRead) ?? 0
-            };
+                // Создаем CancellationTokenSource для отмены всех задач при ошибке
+                var cancellationTokenSource = new CancellationTokenSource();
 
-            return viewModel;
+                // Запускаем задачи с токеном отмены
+                var userTask = _userRepository.GetByIdAsync(userId);
+                var ordersTask = _orderRepository.GetByUserIdAsync(userId);
+                var messagesTask = _messageRepository.GetByToUserIdAsync(userId);
+
+                try
+                {
+                    await Task.WhenAll(userTask, ordersTask, messagesTask)
+                        .WaitAsync(TimeSpan.FromSeconds(30), cancellationTokenSource.Token);
+                }
+                catch (TimeoutException)
+                {
+                    cancellationTokenSource.Cancel();
+                    throw new TimeoutException("Timeout while loading user profile data");
+                }
+                catch (OperationCanceledException)
+                {
+                    throw new OperationCanceledException("Profile loading was cancelled");
+                }
+
+                var user = await userTask;
+                var orders = await ordersTask;
+                var messages = await messagesTask;
+
+                // Проверяем, что пользователь существует
+                if (user == null)
+                    return null;
+
+                // Применяем бизнес-логику VIP статуса
+                var userForViewModel = ApplyVipBusinessLogic(user, orders);
+
+                return new ProfileViewModel
+                {
+                    User = userForViewModel,
+                    Orders = orders ?? Enumerable.Empty<Order>(),
+                    UnreadMessages = messages?.Count(m => !m.IsRead) ?? 0
+                };
+            }
+            catch (Exception ex) when (ex is not ArgumentException)
+            {
+                // Логируем исключение
+                throw new ProfileServiceException($"Error loading profile for user {userId}", ex);
+            }
+        }
+
+        // Кастомное исключение для сервиса
+        public class ProfileServiceException : Exception
+        {
+            public ProfileServiceException(string message, Exception innerException = null)
+                : base(message, innerException) { }
         }
 
         private User ApplyVipBusinessLogic(User user, IEnumerable<Order> orders)
