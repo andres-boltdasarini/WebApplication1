@@ -1,0 +1,46 @@
+<!-- Фильтрация и сортировка -->
+<form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <select name="categoryId" class="form-control" 
+                    asp-items="ViewBag.Categories">
+                <option value="">Все категории</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="sortBy" class="form-control">
+                <option value="name" selected="@(ViewBag.SortBy == "name")">По названию</option>
+                <option value="price" selected="@(ViewBag.SortBy == "price")">По цене</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="sortOrder" class="form-control">
+                <option value="asc" selected="@(ViewBag.SortOrder == "asc")">По возрастанию</option>
+                <option value="desc" selected="@(ViewBag.SortOrder == "desc")">По убыванию</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Применить</button>
+        </div>
+    </div>
+</form>
+
+<!-- Таблица товаров -->
+<table class="table">
+    <!-- ... вывод товаров ... -->
+</table>
+
+<!-- Пагинация -->
+<nav>
+    <ul class="pagination">
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" 
+                   href="?page=@i&categoryId=@Model.CategoryId&sortBy=@Model.SortBy&sortOrder=@Model.SortOrder">
+                    @i
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

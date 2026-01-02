@@ -6,117 +6,69 @@ namespace WebApplication1.Controllers
 {
     public class ProductsController : Controller
     {
-        // Временное хранилище продуктов (вместо БД)
-        private static List<Product> _products = new List<Product>();
-        private static int _nextId = 1;
 
-        // Статический список категорий
-        private static readonly List<string> _categories = new List<string>
-        {
-            "Электроника",
-            "Одежда",
-            "Продукты питания",
-            "Книги",
-            "Спорт"
-        };
 
-        // GET: Products/Indexs
-        public IActionResult Index()
+        public IActionResult Products(
+            int page = 1,
+            int pageSize = 20,
+            string sortBy = "name",
+            string sortOrder = "asc",
+            int? categoryId = null)
         {
-            ViewData["Title"] = "Список продуктов";
-            return View(_products);
-        }
+            // 1. Оптимизация запросов: убираем N+1 проблему
+            var query = _context.Products
+                .Include(p => p.Category) // Используем Include для загрузки связанных данных
+                .Include(p => p.Images)   // Загружаем изображения одним запросом
+                .AsNoTracking(); // Оптимизация для чтения данных
 
-        // GET: Products/Create
-        public IActionResult Create()
-        {
-            ViewData["Title"] = "Создание продукта";
-            ViewData["Categories"] = new SelectList(_categories);
-            return View();
-        }
-
-        // POST: Products/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Product product)
-        {
-            if (ModelState.IsValid)
+            // 2. Добавляем фильтрацию по категории
+            if (categoryId.HasValue)
             {
-                product.Id = _nextId++;
-                _products.Add(product);
-                TempData["SuccessMessage"] = "Продукт успешно создан!";
-                return RedirectToAction(nameof(Index));
+                query = query.Where(p => p.CategoryId == categoryId.Value);
             }
 
-            ViewData["Title"] = "Создание продукта";
-            ViewData["Categories"] = new SelectList(_categories);
-            return View(product);
-        }
-
-        // GET: Products/Edit/5
-        public IActionResult Edit(int? id)
-        {
-            if (id == null)
+            // 3. Добавляем сортировку
+            query = sortBy.ToLower() switch
             {
-                return NotFound();
-            }
+                "price" => sortOrder == "asc"
+                    ? query.OrderBy(p => p.Price)
+                    : query.OrderByDescending(p => p.Price),
+                _ => sortOrder == "asc"
+                    ? query.OrderBy(p => p.Name)
+                    : query.OrderByDescending(p => p.Name),
+            };
 
-            var product = _products.FirstOrDefault(p => p.Id == id);
-            if (product == null)
+            // 4. Добавляем пагинацию
+            var totalCount = query.Count(); // Получаем общее количество для пагинации
+
+            var products = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // 5. Создаем ViewModel для передачи данных в представление
+            var viewModel = new ProductListViewModel
             {
-                return NotFound();
-            }
+                Products = products,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                SortBy = sortBy,
+                SortOrder = sortOrder,
+                CategoryId = categoryId
+            };
 
-            ViewData["Title"] = "Редактирование продукта";
-            ViewData["Categories"] = new SelectList(_categories);
-            return View(product);
-        }
-
-        // POST: Products/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Product product)
-        {
-            if (id != product.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                var existingProduct = _products.FirstOrDefault(p => p.Id == id);
-                if (existingProduct == null)
+            // 6. Передаем категории для фильтра (если нужно в выпадающем списке)
+            ViewBag.Categories = _context.Categories
+                .Select(c => new SelectListItem
                 {
-                    return NotFound();
-                }
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
+                .ToList();
 
-                existingProduct.Name = product.Name;
-                existingProduct.Price = product.Price;
-                existingProduct.Category = product.Category;
-
-                TempData["SuccessMessage"] = "Продукт успешно обновлен!";
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["Title"] = "Редактирование продукта";
-            ViewData["Categories"] = new SelectList(_categories);
-            return View(product);
-        }
-
-        // POST: Products/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            var product = _products.FirstOrDefault(p => p.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _products.Remove(product);
-            TempData["SuccessMessage"] = "Продукт успешно удален!";
-            return RedirectToAction(nameof(Index));
+            return View(viewModel);
         }
     }
     }
