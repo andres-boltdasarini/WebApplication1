@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize] // Требует авторизации для всех действий
     public class ProductsController : Controller
     {
         // Временное хранилище продуктов (вместо БД)
@@ -28,6 +30,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Admin")] // Только админ может создавать
         public IActionResult Create()
         {
             ViewData["Title"] = "Создание продукта";
@@ -38,6 +41,7 @@ namespace WebApplication1.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(Product product)
         {
             if (ModelState.IsValid)
@@ -54,6 +58,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Admin")] // Только админ может редактировать
         public IActionResult Edit(int? id)
         {
             if (id == null)
@@ -75,6 +80,7 @@ namespace WebApplication1.Controllers
         // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id, Product product)
         {
             if (id != product.Id)
@@ -106,6 +112,7 @@ namespace WebApplication1.Controllers
         // POST: Products/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Только админ может удалять
         public IActionResult Delete(int id)
         {
             var product = _products.FirstOrDefault(p => p.Id == id);
@@ -119,4 +126,4 @@ namespace WebApplication1.Controllers
             return RedirectToAction(nameof(Index));
         }
     }
-    }
+}

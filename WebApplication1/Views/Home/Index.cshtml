@@ -1,8 +1,99 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<Product>
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
+@{
+    ViewData["Title"] = "Список продуктов";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOnly")).Succeeded)
+    {
+        <p>
+            <a asp-action="Create" class="btn btn-primary">Создать новый продукт</a>
+        </p>
+    }
+}
+else
+{
+    <div class="alert alert-warning">
+        Для работы с продуктами необходимо <a asp-controller="Auth" asp-action="Login">войти в систему</a>.
+    </div>
+}
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Категория</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>@product.Name</td>
+                    <td>@product.Price руб.</td>
+                    <td>@product.Category</td>
+                    <td>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOnly")).Succeeded)
+                            {
+                                <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">Редактировать</a>
+                                <form asp-action="Delete" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены?')">Удалить</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Только для администраторов</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Войдите для действий</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (User.Identity.IsAuthenticated)
+{
+    <div class="alert alert-info">
+        Продукты не найдены.
+        @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOnly")).Succeeded)
+        {
+            <span>Создайте первый продукт.</span>
+        }
+        else
+        {
+            <span>Обратитесь к администратору для создания продуктов.</span>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        Продукты не найдены. Для просмотра продуктов необходимо войти в систему.
+    </div>
+}
