@@ -1,99 +1,35 @@
-﻿@model List<Product>
-@using Microsoft.AspNetCore.Authorization
-@inject IAuthorizationService AuthorizationService
-
-@{
-    ViewData["Title"] = "Список продуктов";
+﻿@{
+    ViewData["Title"] = "Главная страница";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="text-center">
+    <h1 class="display-4">Добро пожаловать!</h1>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (User.Identity.IsAuthenticated)
-{
-    @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOnly")).Succeeded)
+    @if (User.Identity.IsAuthenticated)
     {
+        <p>Вы вошли как: <strong>@User.Identity.Name</strong></p>
         <p>
-            <a asp-action="Create" class="btn btn-primary">Создать новый продукт</a>
-        </p>
-    }
-}
-else
-{
-    <div class="alert alert-warning">
-        Для работы с продуктами необходимо <a asp-controller="Auth" asp-action="Login">войти в систему</a>.
-    </div>
-}
-
-@if (Model.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Цена</th>
-                <th>Категория</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in Model)
+            Ваша роль:
+            @if (User.IsInRole("Admin"))
             {
-                <tr>
-                    <td>@product.Id</td>
-                    <td>@product.Name</td>
-                    <td>@product.Price руб.</td>
-                    <td>@product.Category</td>
-                    <td>
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOnly")).Succeeded)
-                            {
-                                <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">Редактировать</a>
-                                <form asp-action="Delete" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" value="@product.Id" />
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены?')">Удалить</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <span class="text-muted">Только для администраторов</span>
-                            }
-                        }
-                        else
-                        {
-                            <span class="text-muted">Войдите для действий</span>
-                        }
-                    </td>
-                </tr>
+                <span class="badge bg-success">Администратор</span>
             }
-        </tbody>
-    </table>
-}
-else if (User.Identity.IsAuthenticated)
-{
-    <div class="alert alert-info">
-        Продукты не найдены.
-        @if ((await AuthorizationService.AuthorizeAsync(User, "AdminOnly")).Succeeded)
-        {
-            <span>Создайте первый продукт.</span>
-        }
-        else
-        {
-            <span>Обратитесь к администратору для создания продуктов.</span>
-        }
-    </div>
-}
-else
-{
-    <div class="alert alert-info">
-        Продукты не найдены. Для просмотра продуктов необходимо войти в систему.
-    </div>
-}
+            else
+            {
+                <span class="badge bg-primary">Пользователь</span>
+            }
+        </p>
+
+        <div class="mt-4">
+            <a asp-controller="Products" asp-action="Index" class="btn btn-primary">Перейти к продуктам</a>
+        </div>
+    }
+    else
+    {
+        <p>Пожалуйста, войдите в систему для доступа к функциям приложения.</p>
+        <div class="mt-4">
+            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary me-2">Вход</a>
+            <a asp-controller="Auth" asp-action="Register" class="btn btn-secondary">Регистрация</a>
+        </div>
+    }
+</div>
