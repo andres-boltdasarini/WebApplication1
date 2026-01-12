@@ -1,0 +1,219 @@
+﻿@{
+    ViewData["Title"] = "Как это работает";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <h1 class="display-4 text-center mb-4">
+                        <i class="fas fa-cogs text-primary"></i> @ViewData["Title"]
+                    </h1>
+
+                    <div class="text-center mb-5">
+                        <p class="lead">Пошаговое объяснение процесса проверки палиндромов</p>
+                    </div>
+
+                    <!-- Шаги процесса -->
+                    <div class="timeline">
+                        @{
+                            var steps = new[]
+                            {
+                        new {
+                        Icon = "fas fa-keyboard",
+                        Title = "Ввод текста",
+                        Description = "Пользователь вводит слово или фразу в текстовое поле"
+                        },
+                        new {
+                        Icon = "fas fa-broom",
+                        Title = "Очистка",
+                        Description = "Удаление всех пробелов, знаков препинания и приведение к нижнему регистру"
+                        },
+                        new {
+                        Icon = "fas fa-exchange-alt",
+                        Title = "Переворачивание",
+                        Description = "Создание обратной версии очищенного текста"
+                        },
+                        new {
+                        Icon = "fas fa-balance-scale",
+                        Title = "Сравнение",
+                        Description = "Сравнение исходного текста с перевернутым"
+                        },
+                        new {
+                        Icon = "fas fa-clipboard-check",
+                        Title = "Результат",
+                        Description = "Вывод результата с подробной информацией"
+                        }
+                        };
+                        }
+
+                        @for (int i = 0; i < steps.Length; i++)
+                        {
+                            var step = steps[i];
+                            <div class="timeline-step @(i % 2 == 0 ? "left" : "right")">
+                                <div class="timeline-content">
+                                    <div class="timeline-icon">
+                                        <i class="@step.Icon fa-2x"></i>
+                                    </div>
+                                    <div class="timeline-body">
+                                        <h5>Шаг @(i + 1): @step.Title</h5>
+                                        <p>@step.Description</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Пример -->
+                    <div class="card mt-5 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">
+                                <i class="fas fa-lightbulb"></i> Пример работы
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <h5>Исходная фраза: <code>"А роза упала на лапу Азора"</code></h5>
+
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-long-arrow-alt-right"></i> Шаг 1: Очистка</h6>
+                                            <p class="mb-0">
+                                                Удаляем пробелы: <code>"АрозаупаланалапуАзора"</code><br>
+                                                В нижний регистр: <code>"арозаупаланалапуазора"</code>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-long-arrow-alt-left"></i> Шаг 2: Переворачивание</h6>
+                                            <p class="mb-0">
+                                                Обратный порядок: <br>
+                                                <code>"арозаупаланалапуазора"</code> → <code>"арозауп аланалапуазора"</code>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-success mt-4">
+                                <h5><i class="fas fa-check-circle"></i> Результат: ЭТО ПАЛИНДРОМ!</h5>
+                                <p class="mb-0">Очищенный текст идентичен своей перевернутой версии.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Полезная информация -->
+                    <div class="row mt-5">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-question-circle text-info"></i> Что такое палиндром?</h5>
+                                    <p>Палиндром — это последовательность символов, которая читается одинаково в обоих направлениях.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-exclamation-triangle text-warning"></i> Важно знать</h5>
+                                    <ul class="mb-0">
+                                        <li>Программа игнорирует регистр букв</li>
+                                        <li>Пробелы и знаки препинания удаляются</li>
+                                        <li>Поддерживаются цифры</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <a href="@Url.Action("Index")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play me-2"></i> Попробовать сейчас
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #007bff, #28a745);
+            transform: translateX(-50%);
+        }
+
+    .timeline-step {
+        position: relative;
+        margin-bottom: 40px;
+    }
+
+    .timeline-content {
+        display: flex;
+        align-items: center;
+        max-width: 45%;
+    }
+
+    .timeline-step.left .timeline-content {
+        flex-direction: row;
+        float: left;
+    }
+
+    .timeline-step.right .timeline-content {
+        flex-direction: row-reverse;
+        float: right;
+    }
+
+    .timeline-icon {
+        width: 60px;
+        height: 60px;
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+
+    .timeline-body {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 0 20px;
+        flex: 1;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .timeline-step:nth-child(2) .timeline-icon {
+        background: #28a745;
+    }
+
+    .timeline-step:nth-child(3) .timeline-icon {
+        background: #ffc107;
+    }
+
+    .timeline-step:nth-child(4) .timeline-icon {
+        background: #dc3545;
+    }
+
+    .timeline-step:nth-child(5) .timeline-icon {
+        background: #17a2b8;
+    }
+</style>

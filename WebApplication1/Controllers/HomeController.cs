@@ -1,32 +1,61 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Models;
+using PalindromeChecker.Models;
 
-namespace WebApplication1.Controllers
+namespace PalindromeChecker.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly PalindromeModel _model;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController()
         {
-            _logger = logger;
+            _model = new PalindromeModel();
         }
 
         public IActionResult Index()
         {
+            var viewModel = new IndexViewModel
+            {
+                Examples = _model.GetPalindromeExamples()
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Check(string inputWord, string selectedExample)
+        {
+            // Если выбран пример из списка, используем его
+            string wordToCheck = !string.IsNullOrEmpty(selectedExample)
+                ? selectedExample
+                : inputWord ?? "";
+
+            var result = _model.CheckPalindrome(wordToCheck);
+
+            var viewModel = new IndexViewModel
+            {
+                InputWord = wordToCheck,
+                Result = result,
+                Examples = _model.GetPalindromeExamples(),
+                SelectedExample = selectedExample
+            };
+
+            return View("Index", viewModel);
+        }
+
+        public IActionResult About()
+        {
+            ViewData["Title"] = "О программе";
+            ViewData["Message"] = "Проверка палиндромов";
+
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult HowItWorks()
         {
-            return View();
-        }
+            ViewData["Title"] = "Как это работает";
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }

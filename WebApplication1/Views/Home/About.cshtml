@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "О программе";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <h1 class="display-4 text-center mb-4">
+                        <i class="fas fa-info-circle text-primary"></i> @ViewData["Title"]
+                    </h1>
+
+                    <div class="text-center mb-5">
+                        <div class="mb-3">
+                            <i class="fas fa-search fa-4x text-primary mb-3"></i>
+                        </div>
+                        <h2>Проверка палиндромов</h2>
+                        <p class="lead text-muted">Версия 1.0</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h4><i class="fas fa-bullseye text-success me-2"></i> Цель проекта</h4>
+                                    <p>Создание простого и удобного инструмента для проверки текстов на палиндромы с использованием современных технологий.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h4><i class="fas fa-code text-info me-2"></i> Технологии</h4>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i> ASP.NET Core 8.0</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> MVC архитектура</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Razor Pages</li>
+                                        <li><i class="fas fa-check text-success me-2"></i> Bootstrap 5</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h4><i class="fas fa-cogs text-warning me-2"></i> Особенности</h4>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <h6><i class="fas fa-language"></i> Многоязычность</h6>
+                                            <p class="small">Поддержка русского и английского языков</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6><i class="fas fa-magic"></i> Умная обработка</h6>
+                                            <p class="small">Автоматическая очистка от знаков препинания</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6><i class="fas fa-bolt"></i> Быстрая проверка</h6>
+                                            <p class="small">Мгновенные результаты</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <a href="@Url.Action("Index")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i> Вернуться к проверке
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,280 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model PalindromeChecker.Models.IndexViewModel
+@{
+    ViewData["Title"] = "Проверка палиндромов";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Заголовок -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 text-primary mb-3">
+                    <i class="fas fa-search"></i> Проверка палиндромов
+                </h1>
+                <p class="lead text-muted">
+                    Палиндром — это слово, фраза или последовательность символов,
+                    которая читается одинаково слева направо и справа налево.
+                </p>
+            </div>
+
+            <!-- Форма проверки -->
+            <div class="card shadow-lg mb-4 border-0">
+                <div class="card-body p-4">
+                    <form method="post" asp-action="Check" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="inputWord" class="form-label fs-5">
+                                <i class="fas fa-keyboard"></i> Введите слово или фразу:
+                            </label>
+                            <input type="text"
+                                   class="form-control form-control-lg"
+                                   id="inputWord"
+                                   name="inputWord"
+                                   value="@Model.InputWord"
+                                   placeholder="Например: топот, А роза упала на лапу Азора"
+                                   required
+                                   autofocus>
+                            <div class="invalid-feedback">
+                                Пожалуйста, введите текст для проверки.
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-check-circle"></i> Проверить
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-lg w-100">
+                                    <i class="fas fa-broom"></i> Очистить
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Результат проверки -->
+            @if (Model.Result != null)
+            {
+                <div class="card shadow-lg mb-4 border-0 @(Model.Result.IsPalindrome ? "border-success" : "border-danger")"
+                     style="@(Model.Result.IsPalindrome ? "border-left: 5px solid #198754 !important;" : "border-left: 5px solid #dc3545 !important;")">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-3">
+                            <i class="fas fa-clipboard-check"></i> Результат проверки
+                        </h3>
+
+                        <!-- Сообщение -->
+                        <div class="alert @(Model.Result.IsPalindrome ? "alert-success" : "alert-danger") mb-4">
+                            <h4 class="alert-heading">
+                                @Html.Raw(Model.Result.Message)
+                            </h4>
+                        </div>
+
+                        <!-- Детали -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded">
+                                    <h5><i class="fas fa-font"></i> Исходный текст:</h5>
+                                    <p class="fs-5 fw-bold text-dark">"@Model.Result.Original"</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded">
+                                    <h5><i class="fas fa-broom"></i> Очищенный текст:</h5>
+                                    <p class="fs-5 fw-bold text-dark">"@Model.Result.Cleaned"</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded">
+                                    <h5><i class="fas fa-exchange-alt"></i> Обратный порядок:</h5>
+                                    <p class="fs-5 fw-bold text-dark">"@Model.Result.Reversed"</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded">
+                                    <h5><i class="fas fa-ruler"></i> Длина:</h5>
+                                    <p class="fs-5 fw-bold text-dark">@Model.Result.Length символов</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Примеры палиндромов -->
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-3 text-primary">
+                        <i class="fas fa-lightbulb"></i> Примеры палиндромов
+                    </h3>
+                    <p class="text-muted mb-4">Нажмите на пример, чтобы быстро проверить его:</p>
+
+                    <form method="post" asp-action="Check">
+                        <div class="row g-3">
+                            @foreach (var example in Model.Examples)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <button type="submit"
+                                            name="selectedExample"
+                                            value="@example"
+                                            class="btn btn-outline-primary w-100 text-start example-btn"
+                                            title="Проверить '@example'">
+                                        <i class="fas fa-arrow-right me-2"></i>
+                                        @if (example.Length > 25)
+                                        {
+                                            <span>@example.Substring(0, 22)...</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@example</span>
+                                        }
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Информация о программе -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                <i class="fas fa-info-circle text-info"></i> Как это работает?
+                            </h4>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Удаляем все пробелы и знаки препинания</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Приводим все символы к нижнему регистру</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Переворачиваем строку</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Сравниваем оригинал с перевернутой версией</li>
+                            </ul>
+                            <a href="@Url.Action("HowItWorks")" class="btn btn-outline-info mt-2">
+                                <i class="fas fa-book"></i> Подробнее
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                <i class="fas fa-star text-warning"></i> Интересные факты
+                            </h4>
+                            <div class="fact-item mb-3">
+                                <h6><i class="fas fa-language"></i> Многоязычная поддержка</h6>
+                                <p class="small text-muted">Программа работает с русским и английским языками</p>
+                            </div>
+                            <div class="fact-item mb-3">
+                                <h6><i class="fas fa-code"></i> Исходный код</h6>
+                                <p class="small text-muted">Проект с открытым исходным кодом на GitHub</p>
+                            </div>
+                            <a href="@Url.Action("About")" class="btn btn-outline-warning mt-2">
+                                <i class="fas fa-user"></i> О программе
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Модальное окно с примерами -->
+<div class="modal fade" id="examplesModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Примеры палиндромов</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    @foreach (var example in Model.Examples)
+                    {
+                        <a href="#" class="list-group-item list-group-item-action select-example" data-example="@example">
+                            @example
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Валидация формы
+        (function () {
+            'use strict'
+
+            var forms = document.querySelectorAll('.needs-validation')
+
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // Обработка выбора примера
+        document.querySelectorAll('.select-example').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault()
+                const example = this.getAttribute('data-example')
+                document.getElementById('inputWord').value = example
+                const modal = bootstrap.Modal.getInstance(document.getElementById('examplesModal'))
+                modal.hide()
+            })
+        })
+
+        // Автоматическое обновление длины текста
+        const inputWord = document.getElementById('inputWord')
+        if (inputWord) {
+            const lengthSpan = document.createElement('span')
+            lengthSpan.className = 'form-text text-muted'
+            lengthSpan.id = 'textLength'
+            inputWord.parentNode.appendChild(lengthSpan)
+
+            inputWord.addEventListener('input', function() {
+                const length = this.value.length
+                const wordCount = this.value.trim().split(/\s+/).filter(w => w.length > 0).length
+                lengthSpan.textContent = `Длина: ${length} символов, ${wordCount} слов`
+            })
+
+            // Инициализация при загрузке
+            if (inputWord.value) {
+                inputWord.dispatchEvent(new Event('input'))
+            }
+        }
+
+        // Анимация кнопок примеров
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.classList.remove('btn-outline-primary')
+                this.classList.add('btn-primary')
+            })
+
+            btn.addEventListener('mouseleave', function() {
+                this.classList.remove('btn-primary')
+                this.classList.add('btn-outline-primary')
+            })
+        })
+
+        // Фокус на поле ввода при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!inputWord.value) {
+                inputWord.focus()
+            }
+        })
+    </script>
+}
