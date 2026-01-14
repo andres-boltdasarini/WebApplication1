@@ -23,7 +23,7 @@ namespace PalindromeChecker.Models
             }
 
             // Очищаем строку: удаляем пробелы, знаки препинания, приводим к нижнему регистру
-            string cleaned = CleanString(input);
+            string cleaned = input;
 
             if (string.IsNullOrEmpty(cleaned))
             {
@@ -60,16 +60,7 @@ namespace PalindromeChecker.Models
         }
 
         /// <summary>
-        /// Очищает строку от ненужных символов
-        /// </summary>
-        private string CleanString(string input)
-        {
-            // Удаляем все символы, кроме букв и цифр (поддерживаем русский и английский)
-            string cleaned = Regex.Replace(input, @"[^\p{L}\p{N}]", "", RegexOptions.Compiled);
-            return cleaned.ToLowerInvariant();
-        }
 
-        /// <summary>
         /// Переворачивает строку
         /// </summary>
         private string ReverseString(string input)
