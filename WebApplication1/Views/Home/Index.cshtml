@@ -1,8 +1,28 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model PalindromeChecker.Models.IndexViewModel
+@{
+    ViewData["Title"] = "calculate";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+ <h1>calculate</h1>
+    <form method="post" asp-action="Check">
+        <div>
+            <label for="inputWord">Введите текст для проверки:</label>
+            <input type="text" 
+                   id="inputWord" 
+                   name="inputWord" 
+                   class="form-control" 
+                   value="@Model.InputWord" 
+                   placeholder="например: топот или Race car" />
+        </div>
+        <button type="submit" >Проверить</button>
+    </form>
+        @if (Model.Result != null)
+    {
+        <div >            
+            <div >
+                <h5 >@Model.Result.IsText</h5>
+            </div>
+        </div>
+    }
 </div>
