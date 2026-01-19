@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using PalindromeChecker.Models; // Добавьте это
+using PalindromeChecker.Models;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -8,38 +8,38 @@ namespace WebApplication1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly PalindromeModel _palindromeModel;
+        private readonly InputProcessor _inputProcessor;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _palindromeModel = new PalindromeModel(); // Создаем экземпляр
+            _inputProcessor = new InputProcessor(); // Создаем экземпляр процессора
         }
 
         public IActionResult Index()
         {
-            // Создаем модель для представления
+            // Создаем пустую модель для представления
             var viewModel = new IndexViewModel
             {
-                InputWord = ""
+                InputNumber = ""
             };
-            return View(viewModel); // Передаем модель в представление
+            return View(viewModel);
         }
 
         [HttpPost] // Обработка POST-запроса
-        public IActionResult Check(string inputWord)
+        public IActionResult Process(string inputNumber)
         {
             var viewModel = new IndexViewModel
             {
-                InputWord = inputWord
+                InputNumber = inputNumber
             };
 
-            if (!string.IsNullOrEmpty(inputWord))
+            if (!string.IsNullOrEmpty(inputNumber))
             {
-                viewModel.Result = _palindromeModel.CheckPalindrome(inputWord);
+                viewModel.Result = _inputProcessor.ProcessInput(inputNumber);
             }
 
-            return View("Index", viewModel); // Возвращаемся на Index с результатами
+            return View("Index", viewModel);
         }
 
         public IActionResult Privacy()
