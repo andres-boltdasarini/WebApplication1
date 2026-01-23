@@ -1,0 +1,32 @@
+@model List<ShoppingCartApp.Models.Product>
+
+@{
+    ViewData["Title"] = "Товары";
+}
+
+<h2>Список товаров</h2>
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text"><strong>Цена: @product.Price.ToString("C")</strong></p>
+                    <form asp-action="AddToCart" method="post">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <a asp-action="ViewCart" class="btn btn-success">
+        Перейти в корзину (<span id="cartCount">@ViewBag.CartItemCount</span>)
+    </a>
+</div>
