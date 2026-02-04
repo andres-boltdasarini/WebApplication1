@@ -1,0 +1,79 @@
+@model IEnumerable<WebApplication1.Models.TaskItem>
+
+@{
+    ViewData["Title"] = "Список задач";
+    var total = Model.Count();
+    var completed = Model.Count(t => t.IsCompleted);
+    var active = total - completed;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="mb-4">Список задач</h1>
+
+            <!-- Фильтры -->
+            <div class="mb-3">
+                <div class="btn-group" role="group">
+                    <a class="btn @(ViewBag.Filter == "all" ? "btn-primary" : "btn-outline-primary")" 
+                       asp-action="Index" asp-route-filter="all">Все</a>
+                    <a class="btn @(ViewBag.Filter == "active" ? "btn-primary" : "btn-outline-primary")" 
+                       asp-action="Index" asp-route-filter="active">Активные</a>
+                    <a class="btn @(ViewBag.Filter == "completed" ? "btn-primary" : "btn-outline-primary")" 
+                       asp-action="Index" asp-route-filter="completed">Завершенные</a>
+                </div>
+                <a class="btn btn-success float-end" asp-action="Create">Добавить задачу</a>
+            </div>
+
+            <!-- Список задач -->
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">Нет задач для отображения</div>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var task in Model)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" 
+                                           @(task.IsCompleted ? "checked" : "") disabled>
+                                    <label class="form-check-label @(task.IsCompleted ? "text-decoration-line-through text-muted" : "")">
+                                        <strong>@task.Title</strong>
+                                    </label>
+                                </div>
+                                @if (!string.IsNullOrEmpty(task.Description))
+                                {
+                                    <p class="mb-0 text-muted small">@task.Description</p>
+                                }
+                                <small class="text-muted">Создано: @task.CreatedDate.ToString("dd.MM.yyyy HH:mm")</small>
+                            </div>
+                            <div>
+                                <form asp-action="Toggle" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@task.Id" />
+                                    <button type="submit" class="btn btn-sm @(task.IsCompleted ? "btn-warning" : "btn-success")">
+                                        @(task.IsCompleted ? "Отметить как активную" : "Завершить")
+                                    </button>
+                                </form>
+                                <form asp-action="Delete" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@task.Id" />
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('Удалить эту задачу?')">Удалить</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Статистика -->
+            <div class="mt-3">
+                <small class="text-muted">
+                    Всего: @total | Активные: @active | Завершенные: @completed
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
