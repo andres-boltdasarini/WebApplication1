@@ -1,100 +1,38 @@
-﻿@{
-    ViewData["Title"] = "Booking Agent - Инструкция";
+﻿@model BookingAgentApp.Models.AgentRequest
+@{
+    ViewData["Title"] = "Запросить агента";
 }
 
 <div class="container mt-4">
-    <!-- Заголовок -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 text-primary fw-bold mb-3">Booking Agent</h1>
-        <p class="lead text-muted">Система управления тестовыми стендами</p>
-    </div>
-
-    <!-- Основной контент - Инструкция -->
-    <div class="card shadow border-0">
-        <div class="card-header bg-white py-3">
-            <h2 class="h3 mb-0 text-primary">
-                <i class="bi bi-book me-2"></i>Инструкция по работе
-            </h2>
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2><i class="bi bi-person-plus"></i> Запросить агента</h2>
         </div>
-        <div class="card-body p-4">
-
-            <!-- Раздел 1: Подключение к агенту -->
-            <div class="mb-5">
-                <h3 class="h4 fw-bold text-dark mb-3">
-                    <i class="bi bi-plug me-2"></i>Подключение к агенту
-                </h3>
-                <p class="text-muted mb-3">
-                    После бронирования агента подключиться к нему можно с помощью xtesto
-                </p>
-
-                <div class="alert alert-info border-0 bg-light">
-                    <p class="mb-2"><strong>Пример команды подключения:</strong></p>
-                    <div class="bg-dark text-light p-3 rounded mb-2">
-                        <code class="fs-5">git/testo/virt-qa-stand/xtesto s12 u3</code>
-                    </div>
-                    <p class="mb-0 text-muted">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Где <strong>s12</strong> - номер стенда, <strong>u3</strong> - номер пользователя
-                    </p>
+        <div class="card-body">
+            <form asp-action="GetAgent" method="post">
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label">Ваше имя</label>
+                    <input asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
-            </div>
-
-            <hr class="my-4">
-
-            <!-- Раздел 2: Настройка окружения -->
-            <div class="mb-4">
-                <h3 class="h4 fw-bold text-dark mb-3">
-                    <i class="bi bi-gear me-2"></i>Настройка окружения
-                </h3>
-                <p class="text-muted mb-3">
-                    Выполните следующие команды для настройки рабочего окружения
-                </p>
-
-                <div class="card border">
-                    <div class="card-header bg-light">
-                        <h4 class="h5 mb-0">
-                            <i class="bi bi-terminal me-2"></i>Команды настройки окружения
-                        </h4>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="bg-dark text-light p-4">
-                            <pre class="mb-0" style="font-family: 'Consolas', monospace; font-size: 1rem;">
-<code>cd && cd git
-git clone ssh://git@git.astralinux.ru:7999/qa/testo.git
-git clone ssh://git@git.astralinux.ru:7999/qa/skts-test.git
-cp /home/$USER/CONFIG.testo /home/$USER/git/testo/virt-qa-stand/CONFIG.testo
-echo -e "macro extra_list(){\n\n}" > /home/$USER/git/testo/lib/extra_list.testo
-touch /home/$USER/git/testo/lib/pkgs/sources.list.current</code>
-                            </pre>
-                        </div>
-                    </div>
+                
+                <div class="mb-3">
+                    <label asp-for="AgentId" class="form-label">Выберите агента</label>
+                    <select asp-for="AgentId" class="form-select">
+                        <!-- Здесь нужно получить список свободных агентов из базы -->
+                        <option value="1">Агент 1</option>
+                        <option value="2">Агент 2</option>
+                    </select>
+                    <span asp-validation-for="AgentId" class="text-danger"></span>
                 </div>
-
-                <div class="mt-4">
-                    <div class="alert alert-light border">
-                        <h5 class="h6 fw-bold mb-2">
-                            <i class="bi bi-lightbulb me-2"></i>Примечания:
-                        </h5>
-                        <ul class="mb-0">
-                            <li>Все команды выполняются в терминале Linux</li>
-                            <li>Требуется доступ к Git репозиториям</li>
-                            <li>Команды предполагают наличие базового окружения разработчика</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
+                
+                <button type="submit" class="btn btn-primary">Забронировать</button>
+                <a asp-action="Index" class="btn btn-secondary">Назад</a>
+            </form>
         </div>
-    </div>
-
-    <!-- Информационный блок внизу -->
-    <div class="mt-4 text-center text-muted">
-        <p class="mb-1">
-            <i class="bi bi-shield-check me-1"></i>
-            Для получения доступа к агентам обратитесь к администратору
-        </p>
-        <p class="mb-0 small">
-            Версия инструкции: 1.0 | Последнее обновление: @DateTime.Now.ToString("dd.MM.yyyy")
-        </p>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

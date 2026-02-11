@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="ru" class="h-100">
 <head>
     <meta charset="utf-8" />
@@ -68,5 +68,7 @@
 
     <!-- Только Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
