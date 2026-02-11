@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BookingAgentApp.Models.BookingAgent>
+@{
+    ViewData["Title"] = "Все агенты";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Список агентов</h2>
+    
+    <div class="row">
+        @foreach (var agent in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">@agent.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <strong>Статус:</strong>
+                            <span class="badge @(agent.Status == "Свободен" ? "bg-success" : "bg-danger")">
+                                @agent.Status
+                            </span>
+                        </p>
+                        
+                        @if (agent.Status != "Свободен")
+                        {
+                            <p><strong>Занят:</strong> @agent.BookedBy</p>
+                            <p><strong>Время:</strong> @agent.BookingTime</p>
+                        }
+                        
+                        <a asp-action="Agents" asp-route-id="@agent.Id" class="btn btn-sm btn-outline-primary">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Назад
+    </a>
+</div>

@@ -21,41 +21,16 @@
                 <a asp-controller="Home" asp-action="GetAgent" class="btn btn-primary btn-lg">
                     <i class="bi bi-person-plus"></i> Запросить агента
                 </a>
+                <a asp-controller="Home" asp-action="Agents" class="btn btn-primary btn-lg">
+                    <i class="bi bi-person-plus"></i> Все агенты
+                </a>
                 </button>
                 <!-- Кнопка запроса агента -->
                 <div class="text-center mb-5">
                   
                 </div>
             </div>
-            <!-- После кнопки запроса агента -->
-@if (ViewBag.Agents != null)
-{
-    <div class="mt-4">
-        <h3>Доступные агенты</h3>
-        <div class="row">
-            @foreach (var agent in ViewBag.Agents)
-            {
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">@agent.Name</h5>
-                            <p class="card-text">Статус: 
-                                <span class="badge @(agent.Status == "Свободен" ? "bg-success" : "bg-danger")">
-                                    @agent.Status
-                                </span>
-                            </p>
-                            @if (agent.Status != "Свободен")
-                            {
-                                <p class="card-text">Занят: @agent.BookedBy</p>
-                                <p class="card-text">Время: @agent.BookingTime</p>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-}
+
             <!-- Раздел 1: Подключение к агенту -->
             <div class="mb-5">
                 <h3 class="h4 fw-bold text-dark mb-3">

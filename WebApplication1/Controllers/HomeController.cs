@@ -23,6 +23,11 @@ namespace BookingAgentApp.Controllers
         {
             return View();
         }
+public IActionResult Agents()
+{
+    var agents = _context.BookingAgents.ToList();
+    return View(agents);
+}
 
          [HttpPost]
         public IActionResult GetAgent(AgentRequest request)
