@@ -29,6 +29,18 @@ public IActionResult Agents()
     return View(agents);
 }
 
+        public IActionResult AgentDetails(int id)
+        {
+            var agent = _context.BookingAgents.FirstOrDefault(a => a.Id == id);
+            
+            if (agent == null)
+            {
+                return NotFound();
+            }
+            
+            return View(agent);
+        }
+
          [HttpPost]
         public IActionResult GetAgent(AgentRequest request)
         {

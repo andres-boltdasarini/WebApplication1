@@ -10,8 +10,8 @@
         @foreach (var agent in Model)
         {
             <div class="col-md-4 mb-4">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
+                <div class="card shadow h-100">
+                    <div class="card-header @(agent.Status == "Свободен" ? "bg-success" : "bg-danger") text-white">
                         <h5 class="mb-0">@agent.Name</h5>
                     </div>
                     <div class="card-body">
@@ -28,8 +28,9 @@
                             <p><strong>Время:</strong> @agent.BookingTime</p>
                         }
                         
-                        <a asp-action="Agents" asp-route-id="@agent.Id" class="btn btn-sm btn-outline-primary">
-                            Подробнее
+                        <!-- Измененная ссылка на подробности -->
+                        <a asp-action="AgentDetails" asp-route-id="@agent.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-info-circle"></i> Подробнее
                         </a>
                     </div>
                 </div>
