@@ -61,5 +61,30 @@ public IActionResult Agents()
             }
             return View(request);
         }
+
+        [HttpPost]
+        public IActionResult ReleaseAgent(int id)
+        {
+            var agent = _context.BookingAgents.Find(id);
+            
+            if (agent == null)
+            {
+                return NotFound();
+            }
+
+            if (agent.Status == "Занят")
+            {
+                agent.Status = "Свободен";
+                agent.BookedBy = null;
+                agent.BookingTime = null;
+                
+                _context.Update(agent);
+                _context.SaveChanges();
+                
+                TempData["SuccessMessage"] = $"Агент {agent.Name} успешно освобожден";
+            }
+            
+            return RedirectToAction(nameof(AgentDetails), new { id });
+        }
     }
 }

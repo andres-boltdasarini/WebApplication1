@@ -144,6 +144,17 @@
                                 <i class="bi bi-person-plus me-1"></i>Забронировать агента
                             </a>
                         }
+                        else
+                        {
+                    
+                    <form asp-action="ReleaseAgent" method="post" style="display: inline;">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle me-1"></i>Освободить агент
+                        </button>
+                    </form>
+
+                        }
                     </div>
                 </div>
             </div>
