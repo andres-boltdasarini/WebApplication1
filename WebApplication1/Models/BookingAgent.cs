@@ -1,21 +1,23 @@
-﻿// Models/BookingAgent.cs
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookingAgentApp.Models
 {
     public class BookingAgent
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        
-        [Required(ErrorMessage = "Введите имя агента")]
+
+        [Required]
         public string Name { get; set; } = string.Empty;
-        
+
         public string Status { get; set; } = "Свободен";
-        
+
         public string? BookedBy { get; set; }
-        
+
         public string? BookingTime { get; set; }
-        
+
         public string ConnectionCommand { get; set; } = "git/testo/virt-qa-stand/xtesto s12 u3";
     }
 
