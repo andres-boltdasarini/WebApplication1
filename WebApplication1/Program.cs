@@ -1,12 +1,22 @@
+// Program.cs
 using Microsoft.EntityFrameworkCore;
 using BookingAgentApp.Data;
 using BookingAgentApp.Models;
+using Npgsql;
+using NodaTime;
+using Npgsql.EntityFrameworkCore.PostgreSQL; // Добавьте этот using
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем DbContext с PostgreSQL
+// Добавляем DbContext с PostgreSQL и поддержкой NodaTime
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), 
+        npgsqlOptionsAction =>
+        {
+            npgsqlOptionsAction.UseNodaTime(); // Включаем поддержку NodaTime
+        });
+});
 
 builder.Services.AddControllersWithViews();
 

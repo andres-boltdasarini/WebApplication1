@@ -1,0 +1,50 @@
+﻿<!-- В скриптах BookAgent.cshtml измените формат даты -->
+<script>
+    let startDate = null;
+    let endDate = null;
+
+    function selectDate(element) {
+        const date = element.dataset.date;
+        
+        if (!startDate || (startDate && endDate)) {
+            // Новое выделение
+            startDate = date;
+            endDate = null;
+            updateSelection();
+        } else if (startDate && !endDate) {
+            // Выбираем конечную дату
+            if (new Date(date) >= new Date(startDate)) {
+                endDate = date;
+            } else {
+                // Если выбрали дату раньше начала, меняем начало
+                startDate = date;
+            }
+            updateSelection();
+        }
+        
+        updateDisplay();
+        updateFormFields();
+    }
+
+    function updateDisplay() {
+        document.getElementById('displayStartDate').textContent = 
+            startDate ? new Date(startDate).toLocaleDateString('ru-RU') : 'не выбрано';
+        document.getElementById('displayEndDate').textContent = 
+            endDate ? new Date(endDate).toLocaleDateString('ru-RU') : 'не выбрано';
+        
+        document.getElementById('submitBtn').disabled = !(startDate && endDate);
+    }
+
+    function updateFormFields() {
+        document.getElementById('startDate').value = startDate || '';
+        document.getElementById('endDate').value = endDate || '';
+    }
+
+    function clearSelection() {
+        startDate = null;
+        endDate = null;
+        updateSelection();
+        updateDisplay();
+        updateFormFields();
+    }
+</script>

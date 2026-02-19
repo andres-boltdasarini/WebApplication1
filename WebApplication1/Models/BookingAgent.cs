@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Models/BookingAgent.cs
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using NodaTime;
 
 namespace BookingAgentApp.Models
 {
@@ -17,6 +19,10 @@ namespace BookingAgentApp.Models
         public string? BookedBy { get; set; }
 
         public string? BookingTime { get; set; }
+        
+        // Используем Instant для timestamp with time zone
+        public Instant? StartDate { get; set; }
+        public Instant? EndDate { get; set; }
 
         public string ConnectionCommand { get; set; } = "git/testo/virt-qa-stand/xtesto s12 u3";
     }
@@ -28,5 +34,15 @@ namespace BookingAgentApp.Models
 
         [Required(ErrorMessage = "Выберите агента")]
         public int AgentId { get; set; }
+        
+        [Required(ErrorMessage = "Выберите дату начала")]
+        [Display(Name = "Начало бронирования")]
+        [DataType(DataType.Date)]
+        public DateTime StartDate { get; set; }
+        
+        [Required(ErrorMessage = "Выберите дату окончания")]
+        [Display(Name = "Конец бронирования")]
+        [DataType(DataType.Date)]
+        public DateTime EndDate { get; set; }
     }
 }
