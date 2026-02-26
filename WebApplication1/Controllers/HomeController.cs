@@ -23,13 +23,21 @@ namespace BookingAgentApp.Controllers
             return View();
         }
 
-        public IActionResult GetAgent()
-        {
-            ViewBag.FreeAgents = _context.BookingAgents
-                .Where(a => a.Status == "Свободен")
-                .ToList();
-            return View(new AgentRequest());
-        }
+public IActionResult GetAgent()
+{
+    // Инициализируем модель с датами по умолчанию (сегодня и завтра)
+    var model = new AgentRequest
+    {
+        StartDate = DateTime.Today,
+        EndDate = DateTime.Today.AddDays(1)
+    };
+    
+    ViewBag.FreeAgents = _context.BookingAgents
+        .Where(a => a.Status == "Свободен")
+        .ToList();
+    
+    return View(model);
+}
 
         public IActionResult Agents()
         {
@@ -118,52 +126,72 @@ namespace BookingAgentApp.Controllers
             return RedirectToAction(nameof(AgentDetails), new { id });
         }
 
-        [HttpPost]
-        public IActionResult GetAgent(AgentRequest request)
+// Обновите POST метод GetAgent
+[HttpPost]
+public IActionResult GetAgent(AgentRequest request)
+{
+    if (ModelState.IsValid)
+    {
+        // Проверка что дата окончания не раньше даты начала
+        if (request.EndDate < request.StartDate)
         {
-            if (ModelState.IsValid)
-            {
-                var agent = _context.BookingAgents.Find(request.AgentId);
-                
-                // Конвертируем DateTime в Instant (UTC)
-                var instantStartDate = Instant.FromDateTimeUtc(DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc));
-                var instantEndDate = Instant.FromDateTimeUtc(DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc));
-                
-                // Проверяем доступность дат
-                var isDateAvailable = !_context.BookingAgents.Any(a => 
-                    a.Id != request.AgentId && 
-                    a.Status == "Занят" &&
-                    a.StartDate.HasValue && a.EndDate.HasValue &&
-                    ((instantStartDate >= a.StartDate && instantStartDate <= a.EndDate) ||
-                     (instantEndDate >= a.StartDate && instantEndDate <= a.EndDate) ||
-                     (instantStartDate <= a.StartDate && instantEndDate >= a.EndDate)));
-
-                if (agent != null && agent.Status == "Свободен" && isDateAvailable)
-                {
-                    agent.Status = "Занят";
-                    agent.BookedBy = request.UserName;
-                    agent.BookingTime = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-                    agent.StartDate = instantStartDate;
-                    agent.EndDate = instantEndDate;
-                    
-                    _context.Update(agent);
-                    _context.SaveChanges();
-                    
-                    TempData["SuccessMessage"] = $"Агент {agent.Name} успешно забронирован";
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Агент или выбранные даты недоступны");
-                }
-            }
-            
+            ModelState.AddModelError("EndDate", "Дата окончания не может быть раньше даты начала");
             ViewBag.FreeAgents = _context.BookingAgents
                 .Where(a => a.Status == "Свободен")
                 .ToList();
-                
             return View(request);
         }
+
+        var agent = _context.BookingAgents.Find(request.AgentId);
+        
+        // Конвертируем DateTime в Instant (UTC)
+        var instantStartDate = Instant.FromDateTimeUtc(
+            DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc));
+        var instantEndDate = Instant.FromDateTimeUtc(
+            DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc));
+        
+        // Проверяем доступность дат (учитываем только занятых агентов)
+        var isDateAvailable = !_context.BookingAgents.Any(a => 
+            a.Id != request.AgentId && 
+            a.Status == "Занят" &&
+            a.StartDate.HasValue && a.EndDate.HasValue &&
+            ((instantStartDate >= a.StartDate && instantStartDate <= a.EndDate) ||
+             (instantEndDate >= a.StartDate && instantEndDate <= a.EndDate) ||
+             (instantStartDate <= a.StartDate && instantEndDate >= a.EndDate)));
+
+        if (agent != null && agent.Status == "Свободен" && isDateAvailable)
+        {
+            // Обновляем все поля агента из запроса
+            agent.Arch = request.Arch;
+            agent.TokenS = request.TokenS;
+            agent.TokenECP = request.TokenECP;
+            agent.Vscode = request.Vscode;
+            agent.Sublime = request.Sublime;
+            agent.Notif = request.Notif;
+            agent.Status = "Занят";
+            agent.BookedBy = request.UserMail; // Используем почту как идентификатор пользователя
+            agent.BookingTime = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+            agent.StartDate = instantStartDate;
+            agent.EndDate = instantEndDate;
+            
+            _context.Update(agent);
+            _context.SaveChanges();
+            
+            TempData["SuccessMessage"] = $"Агент {agent.Name} успешно забронирован";
+            return RedirectToAction(nameof(Index));
+        }
+        else
+        {
+            ModelState.AddModelError("", "Агент или выбранные даты недоступны");
+        }
+    }
+    
+    ViewBag.FreeAgents = _context.BookingAgents
+        .Where(a => a.Status == "Свободен")
+        .ToList();
+            
+    return View(request);
+}
 
         [HttpPost]
         public IActionResult ReleaseAgent(int id)

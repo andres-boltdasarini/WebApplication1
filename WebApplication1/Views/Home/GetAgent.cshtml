@@ -5,54 +5,174 @@
 }
 
 <div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h2><i class="bi bi-person-plus"></i> Запросить агента</h2>
-        </div>
-        <div class="card-body">
-            <form asp-action="GetAgent" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                
-                <div class="mb-3">
-                    <label asp-for="UserName" class="form-label">Ваше имя</label>
-                    <input asp-for="UserName" class="form-control" />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="h4 mb-0">
+                        <i class="bi bi-person-plus-fill me-2"></i>
+                        Запрос агента
+                    </h2>
                 </div>
                 
-                <div class="mb-3">
-                    <label asp-for="AgentId" class="form-label">Выберите агента</label>
-                    <select asp-for="AgentId" class="form-select">
-                        <option value="">-- Выберите агента --</option>
-                        @if (ViewBag.FreeAgents != null)
-                        {
-                            foreach (var agent in ViewBag.FreeAgents)
-                            {
-                                <option value="@agent.Id">@agent.Name</option>
-                            }
-                        }
-                    </select>
-                    <span asp-validation-for="AgentId" class="text-danger"></span>
+                <div class="card-body p-4">
+                    <form asp-action="GetAgent" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <!-- Архитектура -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Архитектура</label>
+                            <div class="border rounded p-3 bg-light">
+                                <div class="form-check">
+                                    <input asp-for="Arch" class="form-check-input" type="radio" value="1" id="archX64" checked>
+                                    <label class="form-check-label" for="archX64">
+                                        X86_64
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="Arch" class="form-check-input" type="radio" value="2" id="archARM">
+                                    <label class="form-check-label" for="archARM">
+                                        ARM
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rutoken S -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="TokenS" class="form-check-input" type="checkbox" id="tokenS">
+                                <label class="form-check-label fw-bold" for="tokenS">
+                                    Наличие Rutoken S
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ECP Token -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Наличие ECP токена</label>
+                            <div class="border rounded p-3 bg-light">
+                                <div class="form-check">
+                                    <input asp-for="TokenECP" class="form-check-input" type="radio" value="0" id="ecpNone" checked>
+                                    <label class="form-check-label" for="ecpNone">
+                                        Не нужен
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="TokenECP" class="form-check-input" type="radio" value="1" id="ecpRutoken">
+                                    <label class="form-check-label" for="ecpRutoken">
+                                        Рутокен ЭЦП
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input asp-for="TokenECP" class="form-check-input" type="radio" value="2" id="ecpJaCarta">
+                                    <label class="form-check-label" for="ecpJaCarta">
+                                        JaCarta
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VS Code и Sublime -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input asp-for="Vscode" class="form-check-input" type="checkbox" id="vscode">
+                                    <label class="form-check-label fw-bold" for="vscode">
+                                        Наличие VS Code
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input asp-for="Sublime" class="form-check-input" type="checkbox" id="sublime">
+                                    <label class="form-check-label fw-bold" for="sublime">
+                                        Наличие Sublime Text
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-4">
+                            <label asp-for="UserMail" class="form-label fw-bold">Почта</label>
+                            <input asp-for="UserMail" class="form-control" placeholder="your@astralinux.ru" />
+                            <span asp-validation-for="UserMail" class="text-danger"></span>
+                        </div>
+
+                        <!-- Копия и уведомления -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input asp-for="Copy" class="form-check-input" type="checkbox" id="copy">
+                                    <label class="form-check-label fw-bold" for="copy">
+                                        Сохранять резервную копию?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input asp-for="Notif" class="form-check-input" type="checkbox" id="notif">
+                                    <label class="form-check-label fw-bold" for="notif">
+                                        Отправлять письмо на почту?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Даты бронирования -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="StartDate" class="form-label fw-bold">Начало бронирования</label>
+                                <input asp-for="StartDate" class="form-control" type="date" 
+                                       min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="EndDate" class="form-label fw-bold">Конец бронирования</label>
+                                <input asp-for="EndDate" class="form-control" type="date" 
+                                       min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Выбор агента -->
+                        <div class="mb-4">
+                            <label asp-for="AgentId" class="form-label fw-bold">Выберите агента</label>
+                            <select asp-for="AgentId" class="form-select">
+                                <option value="">-- Выберите агента --</option>
+                                @if (ViewBag.FreeAgents != null)
+                                {
+                                    foreach (var agent in ViewBag.FreeAgents)
+                                    {
+                                        <option value="@agent.Id">@agent.Name</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="AgentId" class="text-danger"></span>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">
+                                <i class="bi bi-x-circle me-1"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Забронировать
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="StartDate" class="form-label">Начало бронирования</label>
-                        <input asp-for="StartDate" class="form-control" type="date" 
-                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                        <span asp-validation-for="StartDate" class="text-danger"></span>
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="EndDate" class="form-label">Конец бронирования</label>
-                        <input asp-for="EndDate" class="form-control" type="date" 
-                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                        <span asp-validation-for="EndDate" class="text-danger"></span>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Забронировать</button>
-                <a asp-action="Index" class="btn btn-secondary">Назад</a>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -69,6 +189,19 @@
                 alert('Дата окончания не может быть раньше даты начала');
             }
         });
+
+        // Устанавливаем минимальную дату окончания при изменении даты начала
+        document.getElementById('StartDate').addEventListener('change', function() {
+            const startDate = this.value;
+            document.getElementById('EndDate').min = startDate;
+            
+            // Если текущая дата окончания меньше новой даты начала, обновляем её
+            const endDateInput = document.getElementById('EndDate');
+            if (endDateInput.value && new Date(endDateInput.value) < new Date(startDate)) {
+                endDateInput.value = startDate;
+            }
+        });
     </script>
+    
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

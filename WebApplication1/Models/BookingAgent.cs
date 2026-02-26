@@ -11,8 +11,20 @@ namespace BookingAgentApp.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public int? Arch { get; set; }
+
+        public bool TokenS { get; set; }
+
+        public int? TokenECP { get; set; }
+
+        public bool Vscode { get; set; }
+
+        public bool Sublime { get; set; }
+
         [Required]
         public string Name { get; set; } = string.Empty;
+
+        public bool Notif { get; set; }
 
         public string Status { get; set; } = "Свободен";
 
@@ -29,11 +41,22 @@ namespace BookingAgentApp.Models
 
     public class AgentRequest
     {
-        [Required(ErrorMessage = "Введите ваше имя")]
-        public string UserName { get; set; } = string.Empty;
+        public int? Arch { get; set; }
 
-        [Required(ErrorMessage = "Выберите агента")]
-        public int AgentId { get; set; }
+        public bool TokenS { get; set; }
+
+        public int? TokenECP { get; set; }
+
+        public bool Vscode { get; set; }
+
+        public bool Sublime { get; set; }
+
+        [Required(ErrorMessage = "Введите вашу почту")]
+        public string UserMail { get; set; } = string.Empty;
+
+        public bool Copy { get; set; }
+
+        public bool Notif { get; set; }
         
         [Required(ErrorMessage = "Выберите дату начала")]
         [Display(Name = "Начало бронирования")]
@@ -44,5 +67,8 @@ namespace BookingAgentApp.Models
         [Display(Name = "Конец бронирования")]
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
+
+        [Required(ErrorMessage = "Выберите агента")]
+        public int? AgentId { get; set; }
     }
 }
