@@ -1,36 +1,260 @@
-﻿<!-- Добавьте после информации об агенте -->
-@if (!string.IsNullOrEmpty(Model.BookedBy))
-{
-    <div class="mt-3">
-        <h6 class="text-primary mb-2">Параметры бронирования:</h6>
-        <ul class="list-unstyled">
-            @if (Model.Arch.HasValue)
-            {
-                <li><strong>Архитектура:</strong> @(Model.Arch == 1 ? "X86_64" : "ARM")</li>
-            }
-            @if (Model.TokenS)
-            {
-                <li><i class="bi bi-check-circle-fill text-success me-1"></i> Rutoken S</li>
-            }
-            @if (Model.TokenECP.HasValue && Model.TokenECP > 0)
-            {
-                <li>
-                    <strong>ECP токен:</strong> 
-                    @(Model.TokenECP == 1 ? "Рутокен ЭЦП" : "JaCarta")
-                </li>
-            }
-            @if (Model.Vscode)
-            {
-                <li><i class="bi bi-check-circle-fill text-success me-1"></i> VS Code</li>
-            }
-            @if (Model.Sublime)
-            {
-                <li><i class="bi bi-check-circle-fill text-success me-1"></i> Sublime Text</li>
-            }
-            @if (Model.Notif)
-            {
-                <li><i class="bi bi-envelope-fill text-info me-1"></i> Уведомления включены</li>
-            }
-        </ul>
-    </div>
+﻿@model BookingAgentApp.Models.BookingAgent
+@{
+    ViewData["Title"] = $"Агент - {Model.Name}";
 }
+
+<div class="container mt-4">
+    <!-- Навигация -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Главная</a></li>
+            <li class="breadcrumb-item"><a asp-action="Agents">Все агенты</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <!-- Основная карточка агента -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow border-0">
+                <!-- Заголовок с статусом -->
+                <div class="card-header @(Model.Status == "Свободен" ? "bg-success" : "bg-danger") text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">
+                            <i class="bi bi-person-badge me-2"></i>
+                            @Model.Name
+                        </h2>
+                        <span class="badge bg-light text-dark fs-6">
+                            ID: @Model.Id
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Статус агента -->
+                    <div class="text-center mb-4">
+                        <div class="display-1 mb-3">
+                            @if (Model.Status == "Свободен")
+                            {
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-x-circle-fill text-danger"></i>
+                            }
+                        </div>
+                        <h3 class="h5 text-muted mb-2">Текущий статус</h3>
+                        <span class="badge @(Model.Status == "Свободен" ? "bg-success" : "bg-danger") fs-5 p-3">
+                            @Model.Status
+                        </span>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Информация об агентах -->
+                    <div class="row g-4">
+                        @if (Model.Status != "Свободен")
+                        {
+                            <div class="col-md-6">
+                                <div class="card border h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary mb-3">
+                                            <i class="bi bi-person-circle me-2"></i>Кто занял
+                                        </h5>
+                                        <p class="card-text fs-5">@Model.BookedBy</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card border h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-primary mb-3">
+                                            <i class="bi bi-clock-history me-2"></i>Время бронирования
+                                        </h5>
+                                        <p class="card-text fs-5">@Model.BookingTime</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Дополнительная информация о параметрах бронирования -->
+                            <div class="col-12 mt-3">
+                                <div class="card border">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-gear me-2"></i>Параметры бронирования
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- Архитектура -->
+                                            @if (Model.Arch.HasValue)
+                                            {
+                                                <div class="col-md-6 mb-2">
+                                                    <strong>Архитектура:</strong>
+                                                    @(Model.Arch.Value == 1 ? "X86_64" :
+                                                        Model.Arch.Value == 2 ? "ARM" : "Не указана")
+                                                </div>
+                                            }
+
+                                            <!-- Rutoken S -->
+                                            <div class="col-md-6 mb-2">
+                                                <strong>Rutoken S:</strong>
+                                                @if (Model.TokenS)
+                                                {
+                                                    <span class="badge bg-success">Есть</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Нет</span>
+                                                }
+                                            </div>
+                                            <!-- Резервная копия -->
+                                            <div class="col-md-6 mb-2">
+                                                <strong>Резервная копия:</strong>
+                                                @if (Model.Copy)
+                                                {
+                                                    <span class="badge bg-info">Сохранять</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Не сохранять</span>
+                                                }
+                                            </div>
+
+                                            <!-- ECP Token -->
+                                            @if (Model.TokenECP.HasValue)
+                                            {
+                                                <div class="col-md-6 mb-2">
+                                                    <strong>ECP токен:</strong>
+                                                    @(Model.TokenECP.Value == 0 ? "Не нужен" :
+                                                        Model.TokenECP.Value == 1 ? "Рутокен ЭЦП" :
+                                                        Model.TokenECP.Value == 2 ? "JaCarta" : "Не указан")
+                                                </div>
+                                            }
+
+                                            <!-- VS Code -->
+                                            <div class="col-md-6 mb-2">
+                                                <strong>VS Code:</strong>
+                                                @if (Model.Vscode)
+                                                {
+                                                    <span class="badge bg-success">Есть</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Нет</span>
+                                                }
+                                            </div>
+
+                                            <!-- Sublime Text -->
+                                            <div class="col-md-6 mb-2">
+                                                <strong>Sublime Text:</strong>
+                                                @if (Model.Sublime)
+                                                {
+                                                    <span class="badge bg-success">Есть</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Нет</span>
+                                                }
+                                            </div>
+
+                                            <!-- Уведомления -->
+                                            <div class="col-md-6 mb-2">
+                                                <strong>Уведомления:</strong>
+                                                @if (Model.Notif)
+                                                {
+                                                    <span class="badge bg-info">Включены</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Отключены</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <div class="alert alert-success text-center" role="alert">
+                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                    Агент свободен и готов к работе
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Команда подключения -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-terminal me-2"></i>Команда для подключения
+                        </h5>
+                        <div class="bg-dark text-light p-4 rounded">
+                            <pre class="mb-0" style="font-family: 'Consolas', monospace;"><code>@Model.ConnectionCommand</code></pre>
+                        </div>
+                        <div class="mt-2 text-muted small">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Используйте эту команду для подключения к агенту
+                        </div>
+                    </div>
+
+                    <!-- Дополнительная информация -->
+                    <div class="card bg-light border-0 mt-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary mb-3">
+                                <i class="bi bi-info-circle me-2"></i>Информация об агенте
+                            </h5>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="bi bi-hash me-2 text-secondary"></i>
+                                    <strong>ID агента:</strong> @Model.Id
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-tag me-2 text-secondary"></i>
+                                    <strong>Имя агента:</strong> @Model.Name
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-flag me-2 text-secondary"></i>
+                                    <strong>Текущий статус:</strong>
+                                    <span class="badge @(Model.Status == "Свободен" ? "bg-success" : "bg-danger")">
+                                        @Model.Status
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div class="card-footer bg-white p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Agents" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>К списку агентов
+                        </a>
+
+                        @if (Model.Status == "Свободен")
+                        {
+                            <a asp-action="GetAgent" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-1"></i>Забронировать агента
+                            </a>
+                        }
+                        else
+                        {
+                            <form asp-action="ReleaseAgent" method="post" style="display: inline;">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-check-circle me-1"></i>Освободить агент
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

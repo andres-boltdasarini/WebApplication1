@@ -1,7 +1,7 @@
 ﻿// Models/BookingAgent.cs
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookingAgentApp.Models
 {
@@ -26,13 +26,15 @@ namespace BookingAgentApp.Models
 
         public bool Notif { get; set; }
 
+        // ДОБАВЬТЕ ЭТО ПОЛЕ
+        public bool Copy { get; set; }  // Сохранять резервную копию
+
         public string Status { get; set; } = "Свободен";
 
         public string? BookedBy { get; set; }
 
         public string? BookingTime { get; set; }
-        
-        // Используем Instant для timestamp with time zone
+
         public Instant? StartDate { get; set; }
         public Instant? EndDate { get; set; }
 
@@ -57,12 +59,12 @@ namespace BookingAgentApp.Models
         public bool Copy { get; set; }
 
         public bool Notif { get; set; }
-        
+
         [Required(ErrorMessage = "Выберите дату начала")]
         [Display(Name = "Начало бронирования")]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
-        
+
         [Required(ErrorMessage = "Выберите дату окончания")]
         [Display(Name = "Конец бронирования")]
         [DataType(DataType.Date)]
