@@ -77,6 +77,27 @@
                                 </div>
                             </div>
 
+                            <!-- ИЗМЕНЕНО: Теперь показываем дату окончания бронирования -->
+                            @if (Model.EndDate.HasValue)
+                            {
+                                <div class="col-12 mt-3">
+                                    <div class="card border bg-light">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-primary mb-3">
+                                                <i class="bi bi-calendar-check me-2"></i>Дата окончания бронирования
+                                            </h5>
+                                            <p class="card-text fs-4 fw-bold text-danger">
+                                                @Model.EndDate.Value.InUtc().ToString("dd.MM.yyyy", null)
+                                            </p>
+                                            <p class="text-muted small mb-0">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                После этой даты агент будет автоматически освобожден
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
                             <!-- Дополнительная информация о параметрах бронирования -->
                             <div class="col-12 mt-3">
                                 <div class="card border">
@@ -225,6 +246,17 @@
                                         @Model.Status
                                     </span>
                                 </li>
+                                <!-- ИЗМЕНЕНО: Добавлена дата окончания в общий список -->
+                                @if (Model.Status != "Свободен" && Model.EndDate.HasValue)
+                                {
+                                    <li class="mb-2">
+                                        <i class="bi bi-calendar-x me-2 text-secondary"></i>
+                                        <strong>Освободится:</strong>
+                                        <span class="text-danger fw-bold">
+                                            @Model.EndDate.Value.InUtc().ToString("dd.MM.yyyy", null)
+                                        </span>
+                                    </li>
+                                }
                             </ul>
                         </div>
                     </div>
