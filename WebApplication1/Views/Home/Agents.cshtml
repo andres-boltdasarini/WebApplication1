@@ -22,13 +22,28 @@
                             </span>
                         </p>
                         
+                        <!-- Параметры агента -->
+                        <div class="mb-3">
+                            <strong>Параметры:</strong>
+                            <ul class="list-unstyled mt-2">
+                                <li><small>Архитектура: @(agent.Arch == 1 ? "X86_64" : agent.Arch == 2 ? "ARM" : "Не указана")</small></li>
+                                <li><small>Rutoken S: @(agent.TokenS ? "Есть" : "Нет")</small></li>
+                                <li><small>ECP токен: @(agent.TokenECP == 0 ? "Не нужен" : agent.TokenECP == 1 ? "Рутокен ЭЦП" : agent.TokenECP == 2 ? "JaCarta" : "Не указан")</small></li>
+                                <li><small>VS Code: @(agent.Vscode ? "Есть" : "Нет")</small></li>
+                                <li><small>Sublime: @(agent.Sublime ? "Есть" : "Нет")</small></li>
+                            </ul>
+                        </div>
+                        
                         @if (agent.Status != "Свободен")
                         {
                             <p><strong>Занят:</strong> @agent.BookedBy</p>
                             <p><strong>Время:</strong> @agent.BookingTime</p>
+                            @if (agent.EndDate.HasValue)
+                            {
+                                <p><strong>Освободится:</strong> @agent.EndDate.Value.InUtc().ToString("dd.MM.yyyy", null)</p>
+                            }
                         }
                         
-                        <!-- Измененная ссылка на подробности -->
                         <a asp-action="AgentDetails" asp-route-id="@agent.Id" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-info-circle"></i> Подробнее
                         </a>

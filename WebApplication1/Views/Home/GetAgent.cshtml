@@ -14,7 +14,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
-            
+
             <div class="card shadow border-0">
                 <div class="card-header bg-primary text-white py-3">
                     <h2 class="h4 mb-0">
@@ -22,11 +22,11 @@
                         Запрос агента
                     </h2>
                 </div>
-                
+
                 <div class="card-body p-4">
                     <form asp-action="GetAgent" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-                        
+
                         <!-- Архитектура -->
                         <div class="mb-4">
                             <label class="form-label fw-bold">Архитектура</label>
@@ -81,7 +81,7 @@
                             </div>
                         </div>
 
-                        <!-- VS Code и Sublime -->
+                        <!-- VS Code и Sublime (информационные поля, не влияют на выбор) -->
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-check">
@@ -132,33 +132,23 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label asp-for="StartDate" class="form-label fw-bold">Начало бронирования</label>
-                                <input asp-for="StartDate" class="form-control" type="date" 
+                                <input asp-for="StartDate" class="form-control" type="date"
                                        min="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                 <span asp-validation-for="StartDate" class="text-danger"></span>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <label asp-for="EndDate" class="form-label fw-bold">Конец бронирования</label>
-                                <input asp-for="EndDate" class="form-control" type="date" 
+                                <input asp-for="EndDate" class="form-control" type="date"
                                        min="@DateTime.Now.ToString("yyyy-MM-dd")" />
                                 <span asp-validation-for="EndDate" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <!-- Выбор агента -->
-                        <div class="mb-4">
-                            <label asp-for="AgentId" class="form-label fw-bold">Выберите агента</label>
-                            <select asp-for="AgentId" class="form-select">
-                                <option value="">-- Выберите агента --</option>
-                                @if (ViewBag.FreeAgents != null)
-                                {
-                                    foreach (var agent in ViewBag.FreeAgents)
-                                    {
-                                        <option value="@agent.Id">@agent.Name</option>
-                                    }
-                                }
-                            </select>
-                            <span asp-validation-for="AgentId" class="text-danger"></span>
+                        <!-- Информационный блок -->
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Система автоматически подберет подходящего свободного агента на основе выбранных параметров
                         </div>
 
                         <!-- Кнопки -->
@@ -167,7 +157,7 @@
                                 <i class="bi bi-x-circle me-1"></i>Отмена
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-1"></i>Забронировать
+                                <i class="bi bi-check-circle me-1"></i>Найти и забронировать
                             </button>
                         </div>
                     </form>
@@ -183,7 +173,7 @@
         document.querySelector('form').addEventListener('submit', function(e) {
             const startDate = new Date(document.getElementById('StartDate').value);
             const endDate = new Date(document.getElementById('EndDate').value);
-            
+
             if (endDate < startDate) {
                 e.preventDefault();
                 alert('Дата окончания не может быть раньше даты начала');
@@ -194,14 +184,15 @@
         document.getElementById('StartDate').addEventListener('change', function() {
             const startDate = this.value;
             document.getElementById('EndDate').min = startDate;
-            
-            // Если текущая дата окончания меньше новой даты начала, обновляем её
+
             const endDateInput = document.getElementById('EndDate');
             if (endDateInput.value && new Date(endDateInput.value) < new Date(startDate)) {
                 endDateInput.value = startDate;
             }
         });
     </script>
-    
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

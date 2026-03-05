@@ -11,34 +11,43 @@ namespace BookingAgentApp.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public int? Arch { get; set; }
-
+        // Параметры агента (жестко заданные)
+        public int? Arch { get; set; }          // 1 - X86_64, 2 - ARM
         public bool TokenS { get; set; }
-
-        public int? TokenECP { get; set; }
-
+        public int? TokenECP { get; set; }       // 0 - не нужен, 1 - Рутокен ЭЦП, 2 - JaCarta
         public bool Vscode { get; set; }
-
         public bool Sublime { get; set; }
+        public bool Notif { get; set; }          // Возможность уведомлений
+        public bool Copy { get; set; }            // Возможность резервного копирования
 
         [Required]
         public string Name { get; set; } = string.Empty;
 
-        public bool Notif { get; set; }
-
-        // ДОБАВЬТЕ ЭТО ПОЛЕ
-        public bool Copy { get; set; }  // Сохранять резервную копию
-
         public string Status { get; set; } = "Свободен";
-
         public string? BookedBy { get; set; }
-
         public string? BookingTime { get; set; }
-
         public Instant? StartDate { get; set; }
         public Instant? EndDate { get; set; }
 
         public string ConnectionCommand { get; set; } = "git/testo/virt-qa-stand/xtesto s12 u3";
+
+        // Вспомогательный метод для проверки соответствия опциям пользователя
+        public bool MatchesRequest(AgentRequest request)
+        {
+            // Проверка архитектуры
+            if (Arch != request.Arch)
+                return false;
+
+            // Проверка TokenECP
+            if (TokenECP != request.TokenECP)
+                return false;
+
+            // Примечание: TokenS, Vscode, Sublime, Notif, Copy - 
+            // это возможности агента, а не требования пользователя
+            // Поэтому они не участвуют в фильтрации
+
+            return true;
+        }
     }
 
     public class AgentRequest
@@ -70,7 +79,7 @@ namespace BookingAgentApp.Models
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
-        [Required(ErrorMessage = "Выберите агента")]
-        public int? AgentId { get; set; }
+        // Больше не нужно, агент выбирается автоматически
+        // public int? AgentId { get; set; }
     }
 }
