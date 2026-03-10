@@ -18,6 +18,51 @@ namespace BookingAgentApp.Controllers
             _calendarService = new CalendarService();
         }
 
+        [HttpPost]
+        public IActionResult FilterAgents(AgentFilter filter)
+        {
+            var query = _context.BookingAgents.AsQueryable();
+
+            // Применяем фильтры
+            if (filter.Arch.HasValue)
+                query = query.Where(a => a.Arch == filter.Arch);
+
+            if (filter.TokenS.HasValue)
+                query = query.Where(a => a.TokenS == filter.TokenS);
+
+            if (filter.TokenECP.HasValue)
+                query = query.Where(a => a.TokenECP == filter.TokenECP);
+
+            if (filter.Vscode.HasValue)
+                query = query.Where(a => a.Vscode == filter.Vscode);
+
+            if (filter.Sublime.HasValue)
+                query = query.Where(a => a.Sublime == filter.Sublime);
+
+            if (filter.Notif.HasValue)
+                query = query.Where(a => a.Notif == filter.Notif);
+
+            if (filter.Copy.HasValue)
+                query = query.Where(a => a.Copy == filter.Copy);
+
+            if (!string.IsNullOrEmpty(filter.Status))
+                query = query.Where(a => a.Status == filter.Status);
+
+            var agents = query.ToList();
+
+            // Сохраняем фильтр в TempData для отображения в представлении
+            TempData["ActiveFilter"] = System.Text.Json.JsonSerializer.Serialize(filter);
+
+            return View("Agents", agents);
+        }
+
+        // Добавить метод для сброса фильтра
+        public IActionResult ClearFilter()
+        {
+            TempData.Remove("ActiveFilter");
+            return RedirectToAction(nameof(Agents));
+        }
+
         public IActionResult Index()
         {
             return View();

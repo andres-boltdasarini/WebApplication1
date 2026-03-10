@@ -1,11 +1,132 @@
 ﻿@model IEnumerable<BookingAgentApp.Models.BookingAgent>
+@using System.Text.Json
 @{
     ViewData["Title"] = "Все агенты";
+    var activeFilter = TempData["ActiveFilter"] != null
+        ? JsonSerializer.Deserialize<AgentFilter>((string)TempData["ActiveFilter"])
+        : new AgentFilter();
 }
 
 <div class="container mt-4">
     <h2 class="mb-4">Список агентов</h2>
-    
+
+    <!-- Панель фильтрации -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-light py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel me-2"></i>Фильтр агентов
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="FilterAgents" method="post" id="filterForm">
+                <div class="row g-3">
+                    <!-- Архитектура -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Архитектура</label>
+                        <select name="Arch" class="form-select">
+                            <option value="">Все</option>
+                            <option value="1" selected="@(activeFilter.Arch == 1)">X86_64</option>
+                            <option value="2" selected="@(activeFilter.Arch == 2)">ARM</option>
+                        </select>
+                    </div>
+
+                    <!-- TokenECP -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">ECP токен</label>
+                        <select name="TokenECP" class="form-select">
+                            <option value="">Все</option>
+                            <option value="0" selected="@(activeFilter.TokenECP == 0)">Не нужен</option>
+                            <option value="1" selected="@(activeFilter.TokenECP == 1)">Рутокен ЭЦП</option>
+                            <option value="2" selected="@(activeFilter.TokenECP == 2)">JaCarta</option>
+                        </select>
+                    </div>
+
+                    <!-- Статус -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Статус</label>
+                        <select name="Status" class="form-select">
+                            <option value="">Все</option>
+                            <option value="Свободен" selected="@(activeFilter.Status == "Свободен")">Свободен</option>
+                            <option value="Занят" selected="@(activeFilter.Status == "Занят")">Занят</option>
+                        </select>
+                    </div>
+
+                    <!-- Пустой div для выравнивания -->
+                    <div class="col-md-3"></div>
+
+                    <!-- Булевы фильтры в виде чекбоксов -->
+                    <div class="col-md-3">
+                        <div class="form-check mt-4">
+                            <input type="checkbox" name="TokenS" class="form-check-input" value="true"
+                                   id="tokenS" @(activeFilter.TokenS == true ? "checked" : "") />
+                            <label class="form-check-label" for="tokenS">Rutoken S</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-check mt-4">
+                            <input type="checkbox" name="Vscode" class="form-check-input" value="true"
+                                   id="vscode" @(activeFilter.Vscode == true ? "checked" : "") />
+                            <label class="form-check-label" for="vscode">VS Code</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-check mt-4">
+                            <input type="checkbox" name="Sublime" class="form-check-input" value="true"
+                                   id="sublime" @(activeFilter.Sublime == true ? "checked" : "") />
+                            <label class="form-check-label" for="sublime">Sublime Text</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-check mt-4">
+                            <input type="checkbox" name="Notif" class="form-check-input" value="true"
+                                   id="notif" @(activeFilter.Notif == true ? "checked" : "") />
+                            <label class="form-check-label" for="notif">Уведомления</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="Copy" class="form-check-input" value="true"
+                                   id="copy" @(activeFilter.Copy == true ? "checked" : "") />
+                            <label class="form-check-label" for="copy">Резервное копирование</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 d-flex justify-content-end gap-2">
+                        <a asp-action="ClearFilter" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Сбросить фильтр
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>Применить фильтр
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Информация о количестве агентов -->
+    <div class="mb-3">
+        <span class="badge bg-info fs-6">
+            Найдено агентов: @Model.Count()
+        </span>
+
+        @if (activeFilter.Arch != null || activeFilter.TokenECP != null || !string.IsNullOrEmpty(activeFilter.Status) ||
+        activeFilter.TokenS == true || activeFilter.Vscode == true || activeFilter.Sublime == true ||
+        activeFilter.Notif == true || activeFilter.Copy == true)
+        {
+            <span class="badge bg-warning text-dark ms-2 fs-6">
+                <i class="bi bi-funnel-fill me-1"></i>Фильтр активен
+            </span>
+        }
+    </div>
+
+    <!-- Список агентов -->
     <div class="row">
         @foreach (var agent in Model)
         {
@@ -21,30 +142,57 @@
                                 @agent.Status
                             </span>
                         </p>
-                        
-                        <!-- Параметры агента -->
+
+                        <!-- Параметры агента с иконками -->
                         <div class="mb-3">
                             <strong>Параметры:</strong>
                             <ul class="list-unstyled mt-2">
-                                <li><small>Архитектура: @(agent.Arch == 1 ? "X86_64" : agent.Arch == 2 ? "ARM" : "Не указана")</small></li>
-                                <li><small>Rutoken S: @(agent.TokenS ? "Есть" : "Нет")</small></li>
-                                <li><small>ECP токен: @(agent.TokenECP == 0 ? "Не нужен" : agent.TokenECP == 1 ? "Рутокен ЭЦП" : agent.TokenECP == 2 ? "JaCarta" : "Не указан")</small></li>
-                                <li><small>VS Code: @(agent.Vscode ? "Есть" : "Нет")</small></li>
-                                <li><small>Sublime: @(agent.Sublime ? "Есть" : "Нет")</small></li>
+                                <li>
+                                    <i class="bi bi-cpu me-1"></i>
+                                    <small>Архитектура: @(agent.Arch == 1 ? "X86_64" : agent.Arch == 2 ? "ARM" : "Не указана")</small>
+                                </li>
+                                <li>
+                                    <i class="bi @(agent.TokenS ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger") me-1"></i>
+                                    <small>Rutoken S: @(agent.TokenS ? "Есть" : "Нет")</small>
+                                </li>
+                                <li>
+                                    <i class="bi bi-key me-1"></i>
+                                    <small>ECP токен: @(agent.TokenECP == 0 ? "Не нужен" : agent.TokenECP == 1 ? "Рутокен ЭЦП" : agent.TokenECP == 2 ? "JaCarta" : "Не указан")</small>
+                                </li>
+                                <li>
+                                    <i class="bi @(agent.Vscode ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger") me-1"></i>
+                                    <small>VS Code: @(agent.Vscode ? "Есть" : "Нет")</small>
+                                </li>
+                                <li>
+                                    <i class="bi @(agent.Sublime ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger") me-1"></i>
+                                    <small>Sublime: @(agent.Sublime ? "Есть" : "Нет")</small>
+                                </li>
+                                @if (agent.Notif || agent.Copy)
+                                {
+                                    <li>
+                                        <i class="bi bi-gear me-1"></i>
+                                        <small>
+                                            @(agent.Notif ? "🔔" : "") @(agent.Copy ? "💾" : "")
+                                        </small>
+                                    </li>
+                                }
                             </ul>
                         </div>
-                        
+
                         @if (agent.Status != "Свободен")
                         {
                             <p><strong>Занят:</strong> @agent.BookedBy</p>
                             <p><strong>Время:</strong> @agent.BookingTime</p>
                             @if (agent.EndDate.HasValue)
                             {
-                                <p><strong>Освободится:</strong> @agent.EndDate.Value.InUtc().ToString("dd.MM.yyyy", null)</p>
+                                <p>
+                                    <strong>Освободится:</strong>
+                                    <span class="text-danger">@agent.EndDate.Value.InUtc().ToString("dd.MM.yyyy", null)</span>
+                                </p>
                             }
                         }
-                        
-                        <a asp-action="AgentDetails" asp-route-id="@agent.Id" class="btn btn-sm btn-outline-primary">
+
+                        <a asp-action="AgentDetails" asp-route-id="@agent.Id" class="btn btn-sm btn-outline-primary w-100">
                             <i class="bi bi-info-circle"></i> Подробнее
                         </a>
                     </div>
@@ -52,8 +200,40 @@
             </div>
         }
     </div>
-    
-    <a asp-action="Index" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Назад
-    </a>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Агенты не найдены. Попробуйте изменить параметры фильтра.
+        </div>
+    }
+
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Назад
+        </a>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Дополнительная валидация для чекбоксов
+        document.getElementById('filterForm').addEventListener('submit', function(e) {
+            // Убеждаемся, что unchecked чекбоксы отправляют false
+            document.querySelectorAll('input[type=checkbox]').forEach(function(checkbox) {
+                if (!checkbox.checked) {
+                    checkbox.value = 'false';
+                    // Создаем скрытое поле, если чекбокс не отмечен
+                    if (!checkbox.name.endsWith('.unchecked')) {
+                        var hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = checkbox.name;
+                        hidden.value = 'false';
+                        checkbox.parentNode.appendChild(hidden);
+                    }
+                }
+            });
+        });
+    </script>
+}
