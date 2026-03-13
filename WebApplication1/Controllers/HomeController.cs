@@ -1,5 +1,6 @@
 // Controllers/HomeController.cs
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using BookingAgentApp.Models;
 using BookingAgentApp.Data;
 using BookingAgentApp.Services;
@@ -18,50 +19,20 @@ namespace BookingAgentApp.Controllers
             _calendarService = new CalendarService();
         }
 
-        [HttpPost]
-        public IActionResult FilterAgents(AgentFilter filter)
-        {
-            var query = _context.BookingAgents.AsQueryable();
-
-            // Применяем фильтры
-            if (filter.Arch.HasValue)
-                query = query.Where(a => a.Arch == filter.Arch);
-
-            if (filter.TokenS.HasValue)
-                query = query.Where(a => a.TokenS == filter.TokenS);
-
-            if (filter.TokenECP.HasValue)
-                query = query.Where(a => a.TokenECP == filter.TokenECP);
-
-            if (filter.Vscode.HasValue)
-                query = query.Where(a => a.Vscode == filter.Vscode);
-
-            if (filter.Sublime.HasValue)
-                query = query.Where(a => a.Sublime == filter.Sublime);
-
-            if (!string.IsNullOrEmpty(filter.Status))
-                query = query.Where(a => a.Status == filter.Status);
-
-            var agents = query.ToList();
-
-            // Сохраняем фильтр в TempData для отображения в представлении
-            TempData["ActiveFilter"] = System.Text.Json.JsonSerializer.Serialize(filter);
-
-            return View("Agents", agents);
-        }
-
-        // Добавить метод для сброса фильтра
-        public IActionResult ClearFilter()
-        {
-            TempData.Remove("ActiveFilter");
-            return RedirectToAction(nameof(Agents));
-        }
-
+        // Публичный доступ - главная страница с инструкцией
         public IActionResult Index()
         {
             return View();
         }
 
+        // Публичный доступ - политика конфиденциальности
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        // Только для авторизованных пользователей - запрос агента
+        [Authorize]
         public IActionResult GetAgent()
         {
             // Инициализируем модель с датами по умолчанию (сегодня и завтра)
@@ -74,23 +45,8 @@ namespace BookingAgentApp.Controllers
             return View(model);
         }
 
-        public IActionResult Agents()
-        {
-            var agents = _context.BookingAgents.ToList();
-            return View(agents);
-        }
-
-        public IActionResult AgentDetails(int id)
-        {
-            var agent = _context.BookingAgents.FirstOrDefault(a => a.Id == id);
-            if (agent == null)
-            {
-                return NotFound();
-            }
-            return View(agent);
-        }
-
         [HttpPost]
+        [Authorize]
         public IActionResult GetAgent(AgentRequest request)
         {
             if (ModelState.IsValid)
@@ -131,7 +87,7 @@ namespace BookingAgentApp.Controllers
                 selectedAgent.StartDate = instantStartDate;
                 selectedAgent.EndDate = instantEndDate;
 
-                // Сохраняем параметры запроса (хотя они и так уже есть в агенте)
+                // Сохраняем параметры запроса
                 selectedAgent.Notif = request.Notif;
                 selectedAgent.Copy = request.Copy;
 
@@ -145,7 +101,71 @@ namespace BookingAgentApp.Controllers
             return View(request);
         }
 
+        // Только для авторизованных пользователей - список всех агентов
+        [Authorize]
+        public IActionResult Agents()
+        {
+            var agents = _context.BookingAgents.ToList();
+            return View(agents);
+        }
+
+        // Только для авторизованных пользователей - детали агента
+        [Authorize]
+        public IActionResult AgentDetails(int id)
+        {
+            var agent = _context.BookingAgents.FirstOrDefault(a => a.Id == id);
+            if (agent == null)
+            {
+                return NotFound();
+            }
+            return View(agent);
+        }
+
+        // Только для авторизованных пользователей - фильтрация агентов
         [HttpPost]
+        [Authorize]
+        public IActionResult FilterAgents(AgentFilter filter)
+        {
+            var query = _context.BookingAgents.AsQueryable();
+
+            // Применяем фильтры
+            if (filter.Arch.HasValue)
+                query = query.Where(a => a.Arch == filter.Arch);
+
+            if (filter.TokenS.HasValue)
+                query = query.Where(a => a.TokenS == filter.TokenS);
+
+            if (filter.TokenECP.HasValue)
+                query = query.Where(a => a.TokenECP == filter.TokenECP);
+
+            if (filter.Vscode.HasValue)
+                query = query.Where(a => a.Vscode == filter.Vscode);
+
+            if (filter.Sublime.HasValue)
+                query = query.Where(a => a.Sublime == filter.Sublime);
+
+            if (!string.IsNullOrEmpty(filter.Status))
+                query = query.Where(a => a.Status == filter.Status);
+
+            var agents = query.ToList();
+
+            // Сохраняем фильтр в TempData для отображения в представлении
+            TempData["ActiveFilter"] = System.Text.Json.JsonSerializer.Serialize(filter);
+
+            return View("Agents", agents);
+        }
+
+        // Только для авторизованных пользователей - сброс фильтра
+        [Authorize]
+        public IActionResult ClearFilter()
+        {
+            TempData.Remove("ActiveFilter");
+            return RedirectToAction(nameof(Agents));
+        }
+
+        // Только для авторизованных пользователей - освобождение агента
+        [HttpPost]
+        [Authorize]
         public IActionResult ReleaseAgent(int id)
         {
             var agent = _context.BookingAgents.Find(id);
@@ -172,7 +192,8 @@ namespace BookingAgentApp.Controllers
             return RedirectToAction(nameof(AgentDetails), new { id });
         }
 
-        // Остальные методы (BookAgent, Calendar и т.д.) можно оставить без изменений
+        // Только для авторизованных пользователей - бронирование агента через календарь
+        [Authorize]
         public IActionResult BookAgent(int id, int? year, int? month)
         {
             var agent = _context.BookingAgents.FirstOrDefault(a => a.Id == id);
@@ -197,9 +218,9 @@ namespace BookingAgentApp.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult BookAgent(int id, DateTime startDate, DateTime endDate, AgentRequest request)
         {
-            // Существующая логика...
             var agent = _context.BookingAgents.Find(id);
             if (agent == null)
             {

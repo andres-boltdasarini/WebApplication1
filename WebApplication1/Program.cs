@@ -2,11 +2,23 @@
 using Microsoft.EntityFrameworkCore;
 using BookingAgentApp.Data;
 using BookingAgentApp.Models;
-using Npgsql;
-using NodaTime;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
+using BookingAgentApp.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Добавляем аутентификацию
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddAuthorization();
 
 // Добавляем DbContext с PostgreSQL и поддержкой NodaTime
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -18,18 +30,44 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         });
 });
 
+// Добавляем сервисы
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CalendarService>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
+// Важно: порядок middleware
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Создаем базу данных и таблицы если их нет
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var authService = scope.ServiceProvider.GetRequiredService<AuthService>();
 
+    // Убеждаемся что база данных создана
     dbContext.Database.EnsureCreated();
 
-    // Проверяем, есть ли данные в таблице
+    // Проверяем, есть ли данные в таблице агентов
     if (!dbContext.BookingAgents.Any())
     {
         // Добавляем начальные данные с жестко заданными параметрами
@@ -77,15 +115,17 @@ using (var scope = app.Services.CreateScope())
 
         dbContext.SaveChanges();
     }
+
+    // Создаем тестовых пользователей если нет пользователей
+    if (!dbContext.Users.Any())
+    {
+        // Используем асинхронный метод синхронно для простоты
+        Task.Run(async () =>
+        {
+            await authService.RegisterUser("user", "User123!", "user@example.com", "User");
+            await authService.RegisterUser("admin", "Admin123!", "admin@example.com", "Admin");
+        }).GetAwaiter().GetResult();
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}");
 
 app.Run();

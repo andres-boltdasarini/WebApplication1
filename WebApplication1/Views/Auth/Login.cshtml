@@ -1,0 +1,99 @@
+﻿@model BookingAgentApp.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Вход в систему";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="h4 mb-0 text-center">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        Вход в систему
+                    </h2>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                        <div class="mb-4">
+                            <label asp-for="Username" class="form-label fw-bold">Имя пользователя</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                <input asp-for="Username" class="form-control" placeholder="Введите имя пользователя" />
+                            </div>
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label fw-bold">Пароль</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-key"></i>
+                                </span>
+                                <input asp-for="Password" class="form-control" type="password" placeholder="Введите пароль" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label">
+                                    Запомнить меня
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Войти
+                            </button>
+                            <a asp-action="Index" asp-controller="Home" class="btn btn-outline-secondary">
+                                <i class="bi bi-house me-2"></i>
+                                На главную
+                            </a>
+                        </div>
+                    </form>
+
+                    @* Ссылка для создания тестового администратора - удалить в продакшене *@
+                    <hr class="my-4" />
+                    <div class="text-center">
+                        <a asp-action="CreateTestAdmin" class="text-decoration-none small">
+                            <i class="bi bi-person-plus"></i> Создать тестового администратора
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

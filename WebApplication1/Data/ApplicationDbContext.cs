@@ -11,12 +11,13 @@ namespace BookingAgentApp.Data
         }
 
         public DbSet<BookingAgent> BookingAgents { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Явно указываем имя таблицы
+            // BookingAgent
             modelBuilder.Entity<BookingAgent>(entity =>
             {
                 entity.ToTable("BookingAgents");
@@ -24,6 +25,17 @@ namespace BookingAgentApp.Data
                 entity.Property(e => e.Id).UseIdentityColumn();
                 entity.Property(e => e.Name).IsRequired();
                 entity.Property(e => e.Status).HasDefaultValue("Свободен");
+            });
+
+            // User
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("Users");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).UseIdentityColumn();
+                entity.Property(e => e.Username).IsRequired();
+                entity.HasIndex(e => e.Username).IsUnique();
+                entity.Property(e => e.Email).IsRequired();
             });
         }
     }
