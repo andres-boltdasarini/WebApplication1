@@ -65,9 +65,10 @@ namespace BookingAgentApp.Models
         [Required(ErrorMessage = "Введите вашу почту")]
         public string UserMail { get; set; } = string.Empty;
 
-        public bool Copy { get; set; }
+        // ИЗМЕНЕНО: установлены значения по умолчанию true
+        public bool Copy { get; set; } = true;
 
-        public bool Notif { get; set; }
+        public bool Notif { get; set; } = true;
 
         [Required(ErrorMessage = "Выберите дату начала")]
         [Display(Name = "Начало бронирования")]

@@ -108,11 +108,11 @@
                             <span asp-validation-for="UserMail" class="text-danger"></span>
                         </div>
 
-                        <!-- Копия и уведомления -->
+                        <!-- Копия и уведомления - ИЗМЕНЕНО: теперь включены по умолчанию -->
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input asp-for="Copy" class="form-check-input" type="checkbox" id="copy">
+                                    <input asp-for="Copy" class="form-check-input" type="checkbox" id="copy" checked="checked">
                                     <label class="form-check-label fw-bold" for="copy">
                                         Сохранять резервную копию?
                                     </label>
@@ -120,7 +120,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input asp-for="Notif" class="form-check-input" type="checkbox" id="notif">
+                                    <input asp-for="Notif" class="form-check-input" type="checkbox" id="notif" checked="checked">
                                     <label class="form-check-label fw-bold" for="notif">
                                         Отправлять письмо на почту?
                                     </label>
