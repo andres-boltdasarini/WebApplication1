@@ -39,12 +39,6 @@ namespace BookingAgentApp.Controllers
             if (filter.Sublime.HasValue)
                 query = query.Where(a => a.Sublime == filter.Sublime);
 
-            if (filter.Notif.HasValue)
-                query = query.Where(a => a.Notif == filter.Notif);
-
-            if (filter.Copy.HasValue)
-                query = query.Where(a => a.Copy == filter.Copy);
-
             if (!string.IsNullOrEmpty(filter.Status))
                 query = query.Where(a => a.Status == filter.Status);
 

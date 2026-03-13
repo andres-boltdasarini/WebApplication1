@@ -78,22 +78,6 @@
                             <label class="form-check-label" for="sublime">Sublime Text</label>
                         </div>
                     </div>
-
-                    <div class="col-md-3">
-                        <div class="form-check mt-4">
-                            <input type="checkbox" name="Notif" class="form-check-input" value="true"
-                                   id="notif" @(activeFilter.Notif == true ? "checked" : "") />
-                            <label class="form-check-label" for="notif">Уведомления</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input type="checkbox" name="Copy" class="form-check-input" value="true"
-                                   id="copy" @(activeFilter.Copy == true ? "checked" : "") />
-                            <label class="form-check-label" for="copy">Резервное копирование</label>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="row mt-4">
@@ -117,8 +101,7 @@
         </span>
 
         @if (activeFilter.Arch != null || activeFilter.TokenECP != null || !string.IsNullOrEmpty(activeFilter.Status) ||
-        activeFilter.TokenS == true || activeFilter.Vscode == true || activeFilter.Sublime == true ||
-        activeFilter.Notif == true || activeFilter.Copy == true)
+        activeFilter.TokenS == true || activeFilter.Vscode == true || activeFilter.Sublime == true)
         {
             <span class="badge bg-warning text-dark ms-2 fs-6">
                 <i class="bi bi-funnel-fill me-1"></i>Фильтр активен
@@ -167,15 +150,7 @@
                                     <i class="bi @(agent.Sublime ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger") me-1"></i>
                                     <small>Sublime: @(agent.Sublime ? "Есть" : "Нет")</small>
                                 </li>
-                                @if (agent.Notif || agent.Copy)
-                                {
-                                    <li>
-                                        <i class="bi bi-gear me-1"></i>
-                                        <small>
-                                            @(agent.Notif ? "🔔" : "") @(agent.Copy ? "💾" : "")
-                                        </small>
-                                    </li>
-                                }
+    
                             </ul>
                         </div>
 

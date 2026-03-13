@@ -12,8 +12,6 @@ namespace BookingAgentApp.Models
         public int? TokenECP { get; set; }
         public bool? Vscode { get; set; }
         public bool? Sublime { get; set; }
-        public bool? Notif { get; set; }
-        public bool? Copy { get; set; }
         public string? Status { get; set; }
     }
 }
