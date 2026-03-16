@@ -51,10 +51,13 @@
 
                     <hr class="my-4">
 
-                    <!-- Информация об агентах -->
-                    <div class="row g-4">
+                   
+                   
                         @if (Model.Status != "Свободен")
+                        
                         {
+                             <!-- Информация об агентах -->
+                             <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="card border h-100">
                                     <div class="card-body">
@@ -196,19 +199,13 @@
                                     </div>
                                 </div>
                             </div>
-                        }
-                        else
-                        {
-                            <div class="col-12">
-                                <div class="alert alert-success text-center" role="alert">
-                                    <i class="bi bi-check-circle-fill me-2"></i>
-                                    Агент свободен и готов к работе
-                                </div>
                             </div>
+                            <hr class="my-4">
                         }
-                    </div>
 
-                    <hr class="my-4">
+                    
+
+                    
 
                     <!-- Команда подключения -->
                     <div class="mb-4">
