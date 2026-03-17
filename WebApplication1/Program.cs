@@ -122,8 +122,8 @@ using (var scope = app.Services.CreateScope())
         // Используем асинхронный метод синхронно для простоты
         Task.Run(async () =>
         {
-            await authService.RegisterUser("user", "User123!", "user@example.com", "User");
-            await authService.RegisterUser("admin", "Admin123!", "admin@example.com", "Admin");
+            await authService.RegisterUser("user", "123", "user@example.com", "User");
+            await authService.RegisterUser("admin", "123", "admin@example.com", "Admin");
         }).GetAwaiter().GetResult();
     }
 }
