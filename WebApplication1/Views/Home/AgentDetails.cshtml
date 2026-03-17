@@ -51,20 +51,23 @@
 
                     <hr class="my-4">
 
-                   
-                   
-                        @if (Model.Status != "Свободен")
-                        
-                        {
-                             <!-- Информация об агентах -->
-                             <div class="row g-4">
+                    @if (Model.Status != "Свободен")
+                    {
+                        <!-- Информация о бронировании -->
+                        <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="card border h-100">
                                     <div class="card-body">
                                         <h5 class="card-title text-primary mb-3">
                                             <i class="bi bi-person-circle me-2"></i>Кто занял
                                         </h5>
-                                        <p class="card-text fs-5">@Model.BookedBy</p>
+                                        <p class="card-text fs-5">
+                                            @Model.BookedBy
+                                            @if (Model.BookedBy == User.Identity.Name)
+                                            {
+                                                <span class="badge bg-info ms-2">Вы</span>
+                                            }
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +83,7 @@
                                 </div>
                             </div>
 
-                            <!-- ИЗМЕНЕНО: Теперь показываем дату окончания бронирования -->
+                            <!-- Дата окончания бронирования -->
                             @if (Model.EndDate.HasValue)
                             {
                                 <div class="col-12 mt-3">
@@ -133,6 +136,7 @@
                                                     <span class="badge bg-secondary">Нет</span>
                                                 }
                                             </div>
+
                                             <!-- Резервная копия -->
                                             <div class="col-md-6 mb-2">
                                                 <strong>Резервная копия:</strong>
@@ -199,13 +203,20 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Информационное сообщение для чужих бронирований -->
+                        @if (Model.BookedBy != User.Identity.Name && !User.IsInRole("Admin"))
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Внимание!</strong> Вы не можете освободить этого агента, так как его забронировал другой пользователь.
+                                Только администратор или пользователь, забронировавший агента, может его освободить.
                             </div>
-                            <hr class="my-4">
                         }
-
-                    
-
-                    
+                    }
 
                     <!-- Команда подключения -->
                     <div class="mb-4">
@@ -243,7 +254,6 @@
                                         @Model.Status
                                     </span>
                                 </li>
-                                <!-- ИЗМЕНЕНО: Добавлена дата окончания в общий список -->
                                 @if (Model.Status != "Свободен" && Model.EndDate.HasValue)
                                 {
                                     <li class="mb-2">
@@ -252,6 +262,13 @@
                                         <span class="text-danger fw-bold">
                                             @Model.EndDate.Value.InUtc().ToString("dd.MM.yyyy", null)
                                         </span>
+                                    </li>
+                                }
+                                @if (Model.Status != "Свободен" && Model.BookedBy == User.Identity.Name)
+                                {
+                                    <li class="mb-2">
+                                        <i class="bi bi-person-check me-2 text-success"></i>
+                                        <strong>Ваше бронирование</strong>
                                     </li>
                                 }
                             </ul>
@@ -268,13 +285,25 @@
 
                         @if (Model.Status != "Свободен")
                         {
-                
-                            <form asp-action="ReleaseAgent" method="post" style="display: inline;">
-                                <input type="hidden" name="id" value="@Model.Id" />
-                                <button type="submit" class="btn btn-warning">
-                                    <i class="bi bi-check-circle me-1"></i>Освободить агент
+                            var canRelease = User.IsInRole("Admin") || Model.BookedBy == User.Identity.Name;
+
+                            @if (canRelease)
+                            {
+                                <form asp-action="ReleaseAgent" method="post" style="display: inline;">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-warning"
+                                            onclick="return confirm('Вы уверены, что хотите освободить этого агента?');">
+                                        <i class="bi bi-check-circle me-1"></i>Освободить агент
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-secondary" disabled
+                                        title="Только администратор или пользователь, забронировавший агента, может его освободить">
+                                    <i class="bi bi-lock me-1"></i>Освободить (недоступно)
                                 </button>
-                            </form>
+                            }
                         }
                     </div>
                 </div>
@@ -282,3 +311,16 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Автоматическое скрытие алертов через 5 секунд
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert:not(.alert-warning)');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}

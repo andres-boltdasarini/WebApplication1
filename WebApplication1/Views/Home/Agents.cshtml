@@ -150,13 +150,18 @@
                                     <i class="bi @(agent.Sublime ? "bi-check-circle-fill text-success" : "bi-x-circle-fill text-danger") me-1"></i>
                                     <small>Sublime: @(agent.Sublime ? "Есть" : "Нет")</small>
                                 </li>
-    
                             </ul>
                         </div>
 
                         @if (agent.Status != "Свободен")
                         {
-                            <p><strong>Занят:</strong> @agent.BookedBy</p>
+                            <p>
+                                <strong>Занят:</strong> @agent.BookedBy
+                                @if (agent.BookedBy == User.Identity.Name)
+                                {
+                                    <span class="badge bg-info">Вы</span>
+                                }
+                            </p>
                             <p><strong>Время:</strong> @agent.BookingTime</p>
                             @if (agent.EndDate.HasValue)
                             {
@@ -164,6 +169,20 @@
                                     <strong>Освободится:</strong>
                                     <span class="text-danger">@agent.EndDate.Value.InUtc().ToString("dd.MM.yyyy", null)</span>
                                 </p>
+                            }
+
+                            <!-- Индикатор возможности освобождения -->
+                            @if (User.IsInRole("Admin") || agent.BookedBy == User.Identity.Name)
+                            {
+                                <span class="badge bg-success mb-2">
+                                    <i class="bi bi-check-circle me-1"></i>Можно освободить
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary mb-2" title="Только администратор или пользователь, забронировавший агента">
+                                    <i class="bi bi-lock me-1"></i>Нельзя освободить
+                                </span>
                             }
                         }
 

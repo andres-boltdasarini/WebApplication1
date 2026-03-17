@@ -175,18 +175,33 @@ namespace BookingAgentApp.Controllers
                 return NotFound();
             }
 
+            // Получаем текущего пользователя
+            var currentUserName = User.Identity.Name;
+            var isAdmin = User.IsInRole("Admin");
+
+            // Проверяем права на освобождение
             if (agent.Status == "Занят")
             {
-                agent.Status = "Свободен";
-                agent.BookedBy = null;
-                agent.BookingTime = null;
-                agent.StartDate = null;
-                agent.EndDate = null;
+                // Админ может освободить любого агента
+                // Обычный пользователь может освободить только своего агента
+                if (isAdmin || agent.BookedBy == currentUserName)
+                {
+                    agent.Status = "Свободен";
+                    agent.BookedBy = null;
+                    agent.BookingTime = null;
+                    agent.StartDate = null;
+                    agent.EndDate = null;
 
-                _context.Update(agent);
-                _context.SaveChanges();
+                    _context.Update(agent);
+                    _context.SaveChanges();
 
-                TempData["SuccessMessage"] = $"Агент {agent.Name} успешно освобожден";
+                    TempData["SuccessMessage"] = $"Агент {agent.Name} успешно освобожден";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "У вас нет прав для освобождения этого агента. Только администратор или пользователь, забронировавший агента, может его освободить.";
+                    return RedirectToAction(nameof(AgentDetails), new { id });
+                }
             }
 
             return RedirectToAction(nameof(AgentDetails), new { id });
