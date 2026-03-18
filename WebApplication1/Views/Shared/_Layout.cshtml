@@ -1,4 +1,4 @@
-﻿﻿
+﻿﻿﻿﻿
 <!DOCTYPE html>
 <html lang="ru" class="h-100">
 <head>
@@ -55,6 +55,8 @@
         .navbar-custom {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1030; /* Bootstrap navbar z-index */
         }
 
         .user-avatar {
@@ -68,6 +70,78 @@
             justify-content: center;
             font-weight: bold;
             font-size: 14px;
+        }
+
+        /* Исправление для выпадающего меню */
+        .dropdown-menu {
+            z-index: 9999 !important; /* Очень высокий z-index */
+            position: absolute !important;
+            will-change: transform;
+            top: 100% !important;
+            right: 0 !important;
+            left: auto !important;
+            transform: translate3d(0, 8px, 0) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+            border: 1px solid rgba(0,0,0,0.1) !important;
+            min-width: 280px !important; /* Шире для лучшего отображения */
+        }
+
+        /* Контейнер для dropdown с правильным позиционированием */
+        .dropdown {
+            position: relative !important;
+            z-index: 9998 !important;
+        }
+
+        /* Кнопка пользователя */
+        .dropdown-toggle {
+            position: relative !important;
+            z-index: 9997 !important;
+        }
+
+        /* Убираем возможное перекрытие от других элементов */
+        header {
+            isolation: isolate;
+            position: relative;
+            z-index: 1030;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Стили для элементов меню */
+        .dropdown-item {
+            padding: 0.65rem 1.5rem !important;
+            font-size: 0.95rem !important;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-item.text-danger i {
+            color: #dc3545;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .dropdown-item.text-danger:hover i {
+            color: white !important;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0 !important;
         }
     </style>
 </head>
@@ -103,12 +177,15 @@
                 <div class="d-flex align-items-center gap-3">
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <div class="dropdown">
+                        <div class="dropdown" style="position: relative;">
                             <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2"
                                     type="button"
                                     id="userDropdown"
                                     data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                    aria-expanded="false"
+                                    data-bs-auto-close="true"
+                                    data-bs-offset="0,8"
+                                    data-bs-reference="parent">
                                 <div class="user-avatar">
                                     @User.Identity.Name?.Substring(0, 1).ToUpper()
                                 </div>
@@ -120,7 +197,9 @@
                                     }
                                 </span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg" 
+                                aria-labelledby="userDropdown"
+                                style="position: absolute; top: 100%; right: 0; left: auto; min-width: 280px; z-index: 9999;">
                                 <li>
                                     <span class="dropdown-item-text text-muted small">
                                         <i class="bi bi-envelope me-2"></i>
@@ -211,12 +290,12 @@
     }
 
     <!-- Основной контент -->
-    <main class="flex-shrink-0">
+    <main class="flex-shrink-0" style="position: relative; z-index: 1;">
         @RenderBody()
     </main>
 
     <!-- Футер -->
-    <footer class="mt-auto py-4 bg-white border-top">
+    <footer class="mt-auto py-4 bg-white border-top" style="position: relative; z-index: 1;">
         <div class="container">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start text-muted">
@@ -255,6 +334,17 @@
                     bsAlert.close();
                 });
             }, 5000);
+        });
+
+        // Дополнительная проверка для dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl, {
+                    autoClose: true,
+                    offset: [0, 8]
+                });
+            });
         });
     </script>
 
