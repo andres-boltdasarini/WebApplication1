@@ -16,7 +16,7 @@
                 </div>
             }
 
-            <!-- ИНФОРМАЦИОННОЕ СООБЩЕНИЕ -->
+    
             <div class="alert alert-info alert-dismissible fade show mb-4 shadow-sm" role="alert">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
@@ -30,7 +30,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
-            <!-- Информация о текущем пользователе -->
+           
             <div class="alert alert-light border mb-4">
                 <div class="d-flex align-items-center">
                     <div class="user-avatar me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
@@ -55,7 +55,7 @@
                     <form asp-action="GetAgent" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                        <!-- Архитектура -->
+                     
                         <div class="mb-4">
                             <label class="form-label fw-bold">Архитектура</label>
                             <div class="border rounded p-3 bg-light">
@@ -74,7 +74,7 @@
                             </div>
                         </div>
 
-                        <!-- Rutoken S -->
+                       
                         <div class="mb-4">
                             <div class="form-check">
                                 <input asp-for="TokenS" class="form-check-input" type="checkbox" id="tokenS">
@@ -84,7 +84,7 @@
                             </div>
                         </div>
 
-                        <!-- ECP Token -->
+                      
                         <div class="mb-4">
                             <label class="form-label fw-bold">Наличие ECP токена</label>
                             <div class="border rounded p-3 bg-light">
@@ -109,7 +109,7 @@
                             </div>
                         </div>
 
-                        <!-- VS Code и Sublime -->
+                     
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-check">
@@ -129,7 +129,6 @@
                             </div>
                         </div>
 
-                        <!-- Копия и уведомления -->
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-check">
@@ -149,7 +148,6 @@
                             </div>
                         </div>
 
-                        <!-- Даты бронирования -->
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label asp-for="StartDate" class="form-label fw-bold">Начало бронирования</label>
@@ -166,12 +164,12 @@
                             </div>
                         </div>
 
-                        <!-- Скрытое поле для UserMail (чтобы модель была валидна) -->
+                       
                         <input type="hidden" asp-for="UserMail" value="@User.Identity.Name" />
 
                         <hr class="my-4">
 
-                        <!-- Кнопки -->
+                       
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a asp-action="Index" class="btn btn-secondary me-md-2">
                                 <i class="bi bi-x-circle me-1"></i>Отмена
@@ -187,7 +185,7 @@
     </div>
 </div>
 
-<!-- Стили для аватара пользователя (если их нет в _Layout) -->
+
 <style>
     .user-avatar {
         width: 32px;
@@ -205,7 +203,7 @@
 
 @section Scripts {
     <script>
-        // Валидация дат
+      
         document.querySelector('form').addEventListener('submit', function(e) {
             const startDate = new Date(document.getElementById('StartDate').value);
             const endDate = new Date(document.getElementById('EndDate').value);
@@ -216,7 +214,7 @@
             }
         });
 
-        // Устанавливаем минимальную дату окончания при изменении даты начала
+        
         document.getElementById('StartDate').addEventListener('change', function() {
             const startDate = this.value;
             document.getElementById('EndDate').min = startDate;

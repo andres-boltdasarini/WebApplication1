@@ -10,7 +10,7 @@
 <div class="container mt-4">
     <h2 class="mb-4">Список агентов</h2>
 
-    <!-- Панель фильтрации -->
+
     <div class="card shadow mb-4">
         <div class="card-header bg-light py-3">
             <h5 class="mb-0">
@@ -20,7 +20,7 @@
         <div class="card-body">
             <form asp-action="FilterAgents" method="post" id="filterForm">
                 <div class="row g-3">
-                    <!-- Архитектура -->
+              
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Архитектура</label>
                         <select name="Arch" class="form-select">
@@ -30,7 +30,7 @@
                         </select>
                     </div>
 
-                    <!-- TokenECP -->
+                   
                     <div class="col-md-3">
                         <label class="form-label fw-bold">ECP токен</label>
                         <select name="TokenECP" class="form-select">
@@ -41,7 +41,7 @@
                         </select>
                     </div>
 
-                    <!-- Статус -->
+                  
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Статус</label>
                         <select name="Status" class="form-select">
@@ -51,10 +51,10 @@
                         </select>
                     </div>
 
-                    <!-- Пустой div для выравнивания -->
+                    
                     <div class="col-md-3"></div>
 
-                    <!-- Булевы фильтры в виде чекбоксов -->
+                   
                     <div class="col-md-3">
                         <div class="form-check mt-4">
                             <input type="checkbox" name="TokenS" class="form-check-input" value="true"
@@ -126,7 +126,7 @@
                             </span>
                         </p>
 
-                        <!-- Параметры агента с иконками -->
+                        
                         <div class="mb-3">
                             <strong>Параметры:</strong>
                             <ul class="list-unstyled mt-2">
@@ -171,7 +171,7 @@
                                 </p>
                             }
 
-                            <!-- Индикатор возможности освобождения -->
+                            
                             @if (User.IsInRole("Admin") || agent.BookedBy == User.Identity.Name)
                             {
                                 <span class="badge bg-success mb-2">
@@ -212,13 +212,13 @@
 
 @section Scripts {
     <script>
-        // Дополнительная валидация для чекбоксов
+      
         document.getElementById('filterForm').addEventListener('submit', function(e) {
-            // Убеждаемся, что unchecked чекбоксы отправляют false
+          
             document.querySelectorAll('input[type=checkbox]').forEach(function(checkbox) {
                 if (!checkbox.checked) {
                     checkbox.value = 'false';
-                    // Создаем скрытое поле, если чекбокс не отмечен
+                    
                     if (!checkbox.name.endsWith('.unchecked')) {
                         var hidden = document.createElement('input');
                         hidden.type = 'hidden';

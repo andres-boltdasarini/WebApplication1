@@ -3,13 +3,13 @@
 }
 
 <div class="container mt-4">
-    <!-- Заголовок -->
+
     <div class="text-center mb-5">
         <h1 class="display-4 text-primary fw-bold mb-3">Booking Agent</h1>
         <p class="lead text-muted">Система управления тестовыми стендами</p>
     </div>
 
-    <!-- Основной контент - Инструкция -->
+    
     <div class="card shadow border-0">
         <div class="card-header bg-white py-3">
             <h2 class="h3 mb-0 text-primary">
@@ -17,7 +17,7 @@
             </h2>
         </div>
         <div class="card-body p-4">
-            <!-- Кнопки действий -->
+            
             <div class="row mb-5 g-3">
                 <div class="col-md-6">
                     <a asp-controller="Home" asp-action="GetAgent" class="btn btn-primary btn-lg w-100">
@@ -31,24 +31,24 @@
                 </div>
             </div>
 
-            <!-- Раздел 1: Подключение к агенту -->
+         
             <div class="mb-5">
                 <h3 class="h4 fw-bold text-dark mb-3">
                     <i class="bi bi-plug me-2"></i>Подключение к агенту
                 </h3>
                 <p class="text-muted mb-3">
-                    После бронирования агента подключиться к нему можно с помощью xtesto
+                    После бронирования агента подключиться к нему можно с помощью xteso
                 </p>
 
 
                     <div class="card-body p-0">
                     <p class="mb-2"><strong>Пример команды подключения:</strong></p>
                     <div class="bg-dark text-light p-3 rounded mb-2">
-                        <code class="fs-5">git/testo/virt-qa-stand/xtesto s12 u3</code>
+                        <code class="fs-5">git/teso/virt-stand/xteso a1 u3</code>
                     </div>
                     <p class="mb-0 text-muted">
                         <i class="bi bi-info-circle me-1"></i>
-                        Где <strong>s12</strong> - номер стенда, <strong>u3</strong> - номер пользователя
+                        Где <strong>a1</strong> - номер стенда, <strong>u3</strong> - номер пользователя
                     </p>
                     </div>
 
@@ -56,7 +56,7 @@
 
             <hr class="my-4">
 
-            <!-- Раздел 2: Настройка окружения -->
+           
             <div class="mb-4">
                 <h3 class="h4 fw-bold text-dark mb-3">
                     <i class="bi bi-gear me-2"></i>Настройка окружения
@@ -75,11 +75,10 @@
                         <div class="bg-dark text-light p-4">
                             <pre class="mb-0" style="font-family: 'Consolas', monospace; font-size: 1rem;">
 <code>cd && cd git
-git clone ssh://git@git.astralinux.ru:7999/qa/testo.git
-git clone ssh://git@git.astralinux.ru:7999/qa/skts-test.git
-cp /home/$USER/CONFIG.testo /home/$USER/git/testo/virt-qa-stand/CONFIG.testo
-echo -e "macro extra_list(){\n\n}" > /home/$USER/git/testo/lib/extra_list.testo
-touch /home/$USER/git/testo/lib/pkgs/sources.list.current</code>
+git clone ssh://git@git.linux.ru:78/qa/teso.git
+cp /home/$USER/CONFIG.teso /home/$USER/git/teso/virt-stand/CONFIG.teso
+echo -e "macro extra_list(){\n\n}" > /home/$USER/git/teso/list.teso
+touch /home/$USER/git/sources.list.current</code>
                             </pre>
                         </div>
                     </div>
@@ -102,7 +101,7 @@ touch /home/$USER/git/testo/lib/pkgs/sources.list.current</code>
         </div>
     </div>
 
-    <!-- Информационный блок внизу -->
+   
     <div class="mt-4 text-center text-muted">
         <p class="mb-1">
             <i class="bi bi-shield-check me-1"></i>

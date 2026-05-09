@@ -1,4 +1,4 @@
-﻿// Models/BookingAgent.cs
+﻿
 using NodaTime;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;

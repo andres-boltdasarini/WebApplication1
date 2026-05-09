@@ -17,7 +17,6 @@ namespace BookingAgentApp.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // BookingAgent
             modelBuilder.Entity<BookingAgent>(entity =>
             {
                 entity.ToTable("BookingAgents");
@@ -27,7 +26,7 @@ namespace BookingAgentApp.Data
                 entity.Property(e => e.Status).HasDefaultValue("Свободен");
             });
 
-            // User
+         
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("Users");

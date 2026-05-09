@@ -19,23 +19,23 @@ namespace BookingAgentApp.Controllers
             _calendarService = new CalendarService();
         }
 
-        // Публичный доступ - главная страница с инструкцией
+      
         public IActionResult Index()
         {
             return View();
         }
 
-        // Публичный доступ - политика конфиденциальности
+      
         public IActionResult Privacy()
         {
             return View();
         }
 
-        // Только для авторизованных пользователей - запрос агента
+        
         [Authorize]
         public IActionResult GetAgent()
         {
-            // Инициализируем модель с датами по умолчанию (сегодня и завтра)
+          
             var model = new AgentRequest
             {
                 StartDate = DateTime.Today,
@@ -51,23 +51,23 @@ namespace BookingAgentApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Проверка что дата окончания не раньше даты начала
+              
                 if (request.EndDate < request.StartDate)
                 {
                     ModelState.AddModelError("EndDate", "Дата окончания не может быть раньше даты начала");
                     return View(request);
                 }
 
-                // Конвертируем DateTime в Instant (UTC)
+                
                 var instantStartDate = Instant.FromDateTimeUtc(
                     DateTime.SpecifyKind(request.StartDate, DateTimeKind.Utc));
                 var instantEndDate = Instant.FromDateTimeUtc(
                     DateTime.SpecifyKind(request.EndDate, DateTimeKind.Utc));
 
-                // Находим всех свободных агентов, соответствующих запросу
+              
                 var availableAgents = _context.BookingAgents
                     .Where(a => a.Status == "Свободен")
-                    .AsEnumerable()  // Переключаемся на клиентскую оценку для MatchesRequest
+                    .AsEnumerable()
                     .Where(a => a.MatchesRequest(request))
                     .ToList();
 
@@ -77,17 +77,17 @@ namespace BookingAgentApp.Controllers
                     return View(request);
                 }
 
-                // Выбираем первого подходящего агента
+              
                 var selectedAgent = availableAgents.First();
 
-                // Обновляем данные агента
+                
                 selectedAgent.Status = "Занят";
                 selectedAgent.BookedBy = request.UserMail;
                 selectedAgent.BookingTime = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
                 selectedAgent.StartDate = instantStartDate;
                 selectedAgent.EndDate = instantEndDate;
 
-                // Сохраняем параметры запроса
+              
                 selectedAgent.Notif = request.Notif;
                 selectedAgent.Copy = request.Copy;
 
@@ -101,7 +101,7 @@ namespace BookingAgentApp.Controllers
             return View(request);
         }
 
-        // Только для авторизованных пользователей - список всех агентов
+        
         [Authorize]
         public IActionResult Agents()
         {
@@ -109,7 +109,7 @@ namespace BookingAgentApp.Controllers
             return View(agents);
         }
 
-        // Только для авторизованных пользователей - детали агента
+        
         [Authorize]
         public IActionResult AgentDetails(int id)
         {
@@ -121,14 +121,14 @@ namespace BookingAgentApp.Controllers
             return View(agent);
         }
 
-        // Только для авторизованных пользователей - фильтрация агентов
+        
         [HttpPost]
         [Authorize]
         public IActionResult FilterAgents(AgentFilter filter)
         {
             var query = _context.BookingAgents.AsQueryable();
 
-            // Применяем фильтры
+      
             if (filter.Arch.HasValue)
                 query = query.Where(a => a.Arch == filter.Arch);
 
@@ -149,13 +149,13 @@ namespace BookingAgentApp.Controllers
 
             var agents = query.ToList();
 
-            // Сохраняем фильтр в TempData для отображения в представлении
+           
             TempData["ActiveFilter"] = System.Text.Json.JsonSerializer.Serialize(filter);
 
             return View("Agents", agents);
         }
 
-        // Только для авторизованных пользователей - сброс фильтра
+   
         [Authorize]
         public IActionResult ClearFilter()
         {
@@ -163,7 +163,7 @@ namespace BookingAgentApp.Controllers
             return RedirectToAction(nameof(Agents));
         }
 
-        // Только для авторизованных пользователей - освобождение агента
+  
         [HttpPost]
         [Authorize]
         public IActionResult ReleaseAgent(int id)
@@ -175,15 +175,14 @@ namespace BookingAgentApp.Controllers
                 return NotFound();
             }
 
-            // Получаем текущего пользователя
+         
             var currentUserName = User.Identity.Name;
             var isAdmin = User.IsInRole("Admin");
 
-            // Проверяем права на освобождение
+           
             if (agent.Status == "Занят")
             {
-                // Админ может освободить любого агента
-                // Обычный пользователь может освободить только своего агента
+              
                 if (isAdmin || agent.BookedBy == currentUserName)
                 {
                     agent.Status = "Свободен";
@@ -207,7 +206,7 @@ namespace BookingAgentApp.Controllers
             return RedirectToAction(nameof(AgentDetails), new { id });
         }
 
-        // Только для авторизованных пользователей - бронирование агента через календарь
+       
         [Authorize]
         public IActionResult BookAgent(int id, int? year, int? month)
         {
@@ -245,7 +244,6 @@ namespace BookingAgentApp.Controllers
             var instantStartDate = Instant.FromDateTimeUtc(DateTime.SpecifyKind(startDate, DateTimeKind.Utc));
             var instantEndDate = Instant.FromDateTimeUtc(DateTime.SpecifyKind(endDate, DateTimeKind.Utc));
 
-            // Проверяем доступность агента на эти даты
             bool isAvailable;
 
             if (agent.Status == "Свободен")

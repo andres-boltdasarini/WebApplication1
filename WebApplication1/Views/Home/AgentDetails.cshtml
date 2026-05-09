@@ -13,11 +13,11 @@
         </ol>
     </nav>
 
-    <!-- Основная карточка агента -->
+    
     <div class="row">
         <div class="col-lg-8 mx-auto">
             <div class="card shadow border-0">
-                <!-- Заголовок с статусом -->
+                
                 <div class="card-header @(Model.Status == "Свободен" ? "bg-success" : "bg-danger") text-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <h2 class="h4 mb-0">
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="card-body p-4">
-                    <!-- Статус агента -->
+                 
                     <div class="text-center mb-4">
                         <div class="display-1 mb-3">
                             @if (Model.Status == "Свободен")
@@ -53,7 +53,6 @@
 
                     @if (Model.Status != "Свободен")
                     {
-                        <!-- Информация о бронировании -->
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="card border h-100">
@@ -83,7 +82,7 @@
                                 </div>
                             </div>
 
-                            <!-- Дата окончания бронирования -->
+                          
                             @if (Model.EndDate.HasValue)
                             {
                                 <div class="col-12 mt-3">
@@ -104,7 +103,7 @@
                                 </div>
                             }
 
-                            <!-- Дополнительная информация о параметрах бронирования -->
+                            
                             <div class="col-12 mt-3">
                                 <div class="card border">
                                     <div class="card-header bg-light">
@@ -114,7 +113,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <!-- Архитектура -->
+                                          
                                             @if (Model.Arch.HasValue)
                                             {
                                                 <div class="col-md-6 mb-2">
@@ -124,7 +123,7 @@
                                                 </div>
                                             }
 
-                                            <!-- Rutoken S -->
+                                         
                                             <div class="col-md-6 mb-2">
                                                 <strong>Rutoken S:</strong>
                                                 @if (Model.TokenS)
@@ -137,7 +136,7 @@
                                                 }
                                             </div>
 
-                                            <!-- Резервная копия -->
+                                            
                                             <div class="col-md-6 mb-2">
                                                 <strong>Резервная копия:</strong>
                                                 @if (Model.Copy)
@@ -150,7 +149,7 @@
                                                 }
                                             </div>
 
-                                            <!-- ECP Token -->
+                                           
                                             @if (Model.TokenECP.HasValue)
                                             {
                                                 <div class="col-md-6 mb-2">
@@ -161,7 +160,7 @@
                                                 </div>
                                             }
 
-                                            <!-- VS Code -->
+                                           
                                             <div class="col-md-6 mb-2">
                                                 <strong>VS Code:</strong>
                                                 @if (Model.Vscode)
@@ -174,7 +173,7 @@
                                                 }
                                             </div>
 
-                                            <!-- Sublime Text -->
+                                            
                                             <div class="col-md-6 mb-2">
                                                 <strong>Sublime Text:</strong>
                                                 @if (Model.Sublime)
@@ -187,7 +186,7 @@
                                                 }
                                             </div>
 
-                                            <!-- Уведомления -->
+                                            
                                             <div class="col-md-6 mb-2">
                                                 <strong>Уведомления:</strong>
                                                 @if (Model.Notif)
@@ -207,7 +206,7 @@
 
                         <hr class="my-4">
 
-                        <!-- Информационное сообщение для чужих бронирований -->
+                       
                         @if (Model.BookedBy != User.Identity.Name && !User.IsInRole("Admin"))
                         {
                             <div class="alert alert-warning" role="alert">
@@ -218,7 +217,7 @@
                         }
                     }
 
-                    <!-- Команда подключения -->
+                  
                     <div class="mb-4">
                         <h5 class="text-primary mb-3">
                             <i class="bi bi-terminal me-2"></i>Команда для подключения
@@ -232,7 +231,7 @@
                         </div>
                     </div>
 
-                    <!-- Дополнительная информация -->
+                    
                     <div class="card bg-light border-0 mt-4">
                         <div class="card-body">
                             <h5 class="card-title text-primary mb-3">
@@ -276,7 +275,7 @@
                     </div>
                 </div>
 
-                <!-- Кнопки действий -->
+                
                 <div class="card-footer bg-white p-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <a asp-action="Agents" class="btn btn-outline-secondary">
@@ -314,7 +313,7 @@
 
 @section Scripts {
     <script>
-        // Автоматическое скрытие алертов через 5 секунд
+     
         setTimeout(function() {
             var alerts = document.querySelectorAll('.alert:not(.alert-warning)');
             alerts.forEach(function(alert) {

@@ -17,21 +17,20 @@ namespace BookingAgentApp.Services
                 SelectedAgentId = agentId
             };
 
-            // Конвертируем Instant в LocalDate для календаря
+          
             LocalDate? localStartDate = startDate?.InUtc().Date;
             LocalDate? localEndDate = endDate?.InUtc().Date;
 
-            // Создаем первый день месяца
             var firstDayOfMonth = new LocalDate(year, month, 1);
             
-            // Определяем первый день для отображения (понедельник)
+           
             var firstDisplayDay = firstDayOfMonth;
             while (firstDisplayDay.DayOfWeek != IsoDayOfWeek.Monday)
             {
                 firstDisplayDay = firstDisplayDay.PlusDays(-1);
             }
 
-            // Генерируем 42 дня (6 недель по 7 дней)
+            
             for (int i = 0; i < 42; i++)
             {
                 var currentDate = firstDisplayDay.PlusDays(i);

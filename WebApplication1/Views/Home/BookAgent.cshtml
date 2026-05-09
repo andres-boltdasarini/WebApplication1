@@ -7,16 +7,16 @@
         const date = element.dataset.date;
         
         if (!startDate || (startDate && endDate)) {
-            // Новое выделение
+         
             startDate = date;
             endDate = null;
             updateSelection();
         } else if (startDate && !endDate) {
-            // Выбираем конечную дату
+         
             if (new Date(date) >= new Date(startDate)) {
                 endDate = date;
             } else {
-                // Если выбрали дату раньше начала, меняем начало
+                
                 startDate = date;
             }
             updateSelection();

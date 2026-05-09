@@ -8,11 +8,11 @@ CREATE TABLE "BookingAgents" (
     "Status" TEXT NOT NULL DEFAULT 'Свободен',
     "BookedBy" TEXT,
     "BookingTime" TEXT,
-    "ConnectionCommand" TEXT NOT NULL DEFAULT 'git/testo/virt-qa-stand/xtesto s12 u3'
+    "ConnectionCommand" TEXT NOT NULL DEFAULT 'git/testo/virt-stand/xteso a1 u3'
 );
 
 INSERT INTO "BookingAgents" ("Name", "Status") 
 VALUES 
-    ('Агент 1 - Стенд s12', 'Свободен'),
-    ('Агент 2 - Стенд s13', 'Свободен'),
-    ('Агент 3 - Стенд s14', 'Свободен');
+    ('Агент 1 - Стенд a2', 'Свободен'),
+    ('Агент 2 - Стенд a3', 'Свободен'),
+    ('Агент 3 - Стенд a4', 'Свободен');

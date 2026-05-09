@@ -55,7 +55,7 @@ namespace BookingAgentApp.Controllers
             return View();
         }
 
-        // Метод для создания тестового администратора (можно удалить в продакшене)
+       
         [HttpGet]
         public async Task<IActionResult> CreateTestAdmin()
         {
